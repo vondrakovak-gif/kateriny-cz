@@ -1,31 +1,47 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const slides = [
+  { src: '/images/VyHUB_web_by_Katerina_Vondrakova.png', alt: 'VyHUB' },
+  { src: '/images/hero_clan_by_Katerina_Vondrakova.png', alt: 'HERO CLAN' },
+  { src: '/images/brokis.png', alt: 'Brokis' },
+  { src: '/images/Skala_web_by_Katerina_Vondrakova.png', alt: 'Skála' },
+];
 ---
 
 <Layout title="Kateřina Vondráková" description="Weby, služby a strategie — Kateřina Vondráková, Jihlava">
 
   <!-- Hero -->
-  <section class="grid-2col" style="max-width: 1360px; margin: 0 auto; padding: 60px 20px 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
+  <section class="hero-section grid-2col" style="max-width: 1360px; margin: 0 auto; padding: 60px 20px 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
     <div>
       <h1 style="font-size: clamp(3rem, 7vw, 5.5rem); line-height: 1.05; margin: 0 0 24px; color: #bc2938;">
         Weby<br />Služby<br />Strategie
       </h1>
       <p style="font-size: 1.1rem; font-weight: 300; margin: 0 0 32px; color: #bc2938;">
-        🤝 Navrhuji a tvořím pro smysluplné projekty.
+        👩‍💻 Navrhuji a tvořím pro smysluplné projekty.
       </p>
       <a href="/portfolio-sluzeb" class="btn-default">PORTFOLIO SLUŽEB</a>
     </div>
-    <div style="text-align: right;">
-      <img src="/images/brokis.png" alt="Ukázka webu" style="max-width: 100%; border-radius: 8px;" />
+    <div style="position: relative; overflow: hidden; border-radius: 8px;">
+      <div id="hero-slider" style="position: relative; width: 100%; aspect-ratio: 1.658;">
+        {slides.map((slide, i) => (
+          <img
+            src={slide.src}
+            alt={slide.alt}
+            class="slide"
+            style={`position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 8px; opacity: ${i === 0 ? '1' : '0'}; transition: opacity 1s ease-in-out;`}
+          />
+        ))}
+      </div>
     </div>
   </section>
 
   <!-- Testimonials -->
-  <section style="max-width: 1360px; margin: 0 auto; padding: 60px 20px;">
+  <section class="testimonials-section" style="max-width: 1360px; margin: 0 auto; padding: 60px 20px;">
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
 
-      <!-- Testimonial 1 – Lukáš Flekal -->
-      <div class="box-secondary" style="background: #ffffff; border: 2px solid #bc2938; border-radius: 29px; padding: 28px 32px;">
+      <!-- Flekal -->
+      <div class="speech-bubble">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
           <div style="width: 40px; height: 40px; border-radius: 50%; background: #bc2938; display: flex; align-items: center; justify-content: center; color: #fce6ef; font-weight: 600; font-size: 14px; flex-shrink: 0;">LF</div>
           <div>
@@ -42,8 +58,8 @@ import Layout from '../layouts/Layout.astro';
         </p>
       </div>
 
-      <!-- Testimonial 2 – Jan Kurka -->
-      <div class="box-secondary" style="background: #ffffff; border: 2px solid #bc2938; border-radius: 29px; padding: 28px 32px;">
+      <!-- Kurka -->
+      <div class="speech-bubble">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
           <div style="width: 40px; height: 40px; border-radius: 50%; background: #bc2938; display: flex; align-items: center; justify-content: center; color: #fce6ef; font-weight: 600; font-size: 14px; flex-shrink: 0;">JK</div>
           <div>
@@ -61,7 +77,7 @@ import Layout from '../layouts/Layout.astro';
   </section>
 
   <!-- Přemýšlím -->
-  <section style="max-width: 1360px; margin: 0 auto; padding: 40px 20px 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start;">
+  <section class="content-section" style="max-width: 1360px; margin: 0 auto; padding: 40px 20px 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start;">
     <div>
       <h2 style="font-size: clamp(2rem, 4vw, 3rem); margin: 0 0 24px;">Přemýšlím</h2>
       <p style="font-size: 1rem; font-weight: 300; line-height: 1.7; color: #bc2938; margin: 0 0 32px;">
@@ -74,7 +90,7 @@ import Layout from '../layouts/Layout.astro';
   </section>
 
   <!-- Spojme se -->
-  <section id="spojme-se" style="max-width: 1360px; margin: 0 auto; padding: 80px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; border-top: 2px solid #bc2938;">
+  <section id="spojme-se" class="content-section" style="max-width: 1360px; margin: 0 auto; padding: 80px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; border-top: 2px solid #bc2938;">
     <div>
       <h2 style="font-size: clamp(2rem, 4vw, 3rem); margin: 0 0 24px;">🤝 Spojme se</h2>
       <p style="font-size: 1rem; font-weight: 300; line-height: 1.7; color: #bc2938; margin: 0 0 32px;">
@@ -85,7 +101,7 @@ import Layout from '../layouts/Layout.astro';
         <img src="/images/katerina_vondrakova.png" alt="Kateřina Vondráková"
           style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; object-position: center 15%; border: 2px solid #bc2938;" />
         <div>
-          <p style="font-family: 'Abril Fatface', cursive, serif; font-size: 1.1rem; color: #bc2938; margin: 0 0 4px;">Ing. Kateřina Vondráková</p>
+          <h3 style="font-size: 1.1rem; margin: 0 0 4px;">Ing. Kateřina Vondráková</h3>
           <p style="margin: 2px 0; font-size: 14px; font-weight: 300;">
             <a href="mailto:zeptamse@kateriny.cz" style="color: #bc2938;">zeptamse@kateriny.cz</a>
           </p>
@@ -125,9 +141,63 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <style>
+  /* Page load fade-in */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-section {
+    animation: fadeUp 0.7s ease-out both;
+  }
+  .testimonials-section {
+    animation: fadeUp 0.7s ease-out 0.2s both;
+  }
+  .content-section {
+    animation: fadeUp 0.7s ease-out 0.35s both;
+  }
+
+  /* Speech bubble */
+  .speech-bubble {
+    position: relative;
+    background: #ffffff;
+    border: 2px solid #bc2938;
+    border-radius: 29px;
+    padding: 28px 32px;
+    color: #bc2938;
+  }
+  .speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -22px;
+    left: 44px;
+    border: 11px solid transparent;
+    border-top-color: #bc2938;
+  }
+  .speech-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -18px;
+    left: 46px;
+    border: 9px solid transparent;
+    border-top-color: #ffffff;
+    z-index: 1;
+  }
+
   @media (max-width: 767px) {
     section[style*="grid-template-columns: 1fr 1fr"] {
       grid-template-columns: 1fr !important;
     }
   }
 </style>
+
+<script>
+  const slides = document.querySelectorAll<HTMLImageElement>('#hero-slider .slide');
+  let current = 0;
+
+  setInterval(() => {
+    slides[current].style.opacity = '0';
+    current = (current + 1) % slides.length;
+    slides[current].style.opacity = '1';
+  }, 3000);
+</script>

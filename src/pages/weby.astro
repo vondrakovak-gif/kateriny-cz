@@ -3,64 +3,55 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="Weby" description="Weby, které fungují — krásné i výkonné.">
-  <section class="max-w-5xl mx-auto px-6 pt-16 pb-8">
-    <p class="text-sm font-medium text-brand-600 uppercase tracking-widest mb-4">Weby</p>
-    <h1 class="text-4xl md:text-5xl font-light mb-6">Weby, které fungují</h1>
-    <p class="text-xl text-gray-500 max-w-2xl">
+
+  <section style="max-width: 1360px; margin: 0 auto; padding: 60px 20px 40px;">
+    <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); margin: 0 0 24px; color: #bc2938;">Weby, které fungují</h1>
+    <p style="font-size: 1.1rem; font-weight: 300; max-width: 700px; line-height: 1.7; color: #bc2938; margin: 0;">
       Krásný web nestačí. Musí přivádět zákazníky, sdělovat hodnotu a dávat smysl.
     </p>
   </section>
 
-  <section class="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
-    <div class="grid md:grid-cols-2 gap-12">
-      <div>
-        <h2 class="text-xl font-medium mb-4">Jak pracuju</h2>
-        <p class="text-gray-600 leading-relaxed mb-4">
-          Stavím weby, které spojují estetiku s maximální funkcionalitou. Klient po předání
-          nepotřebuje programátora — obsah si spravuje sám, jednoduše a bezpečně.
+  <section style="max-width: 1360px; margin: 0 auto; padding: 40px 20px; border-top: 2px solid #bc2938;">
+    <div class="grid-2col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+      <div class="box-default">
+        <h2 style="font-size: 1.3rem; margin: 0 0 16px;">Jak pracuju</h2>
+        <p style="font-size: 15px; font-weight: 300; line-height: 1.7; margin: 0;">
+          Stavím weby na české platformě <a href="https://www.solidpixels.com" target="_blank" rel="noopener" style="color: #bc2938;"><strong style="font-weight: 500;">solidpixels.</strong> ↗</a>,
+          která spojuje estetiku s maximální funkčností — a je volbou č. 1 pro mě, prezidenta Pavla, DOX a další.
+          Klient po předání nepotřebuje programátora — obsah si spravuje sám, jednoduše a bezpečně.
         </p>
       </div>
-      <div>
-        <h2 class="text-xl font-medium mb-4">Co dostaneš</h2>
-        <ul class="space-y-3 text-gray-600">
-          {[
-            'Analýza potřeb a cílové skupiny',
-            'Návrh struktury a obsahu',
-            'Grafický design na míru',
-            'Implementace a testování',
-            'Předání s instrukcemi',
-            'Podpora po spuštění',
-          ].map(item => (
-            <li class="flex gap-3">
-              <span class="text-brand-600 mt-0.5">✓</span>
-              <span>{item}</span>
-            </li>
-          ))}
+      <div class="box-default">
+        <h2 style="font-size: 1.3rem; margin: 0 0 16px;">Co dostaneš</h2>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 15px; font-weight: 300; line-height: 1.5; color: #bc2938;">
+          <li>✓ Analýza potřeb a cílové skupiny</li>
+          <li>✓ Návrh struktury a obsahu</li>
+          <li>✓ Grafický design na míru</li>
+          <li>✓ Implementace a testování</li>
+          <li>✓ Předání s instrukcemi</li>
+          <li>✓ Podpora po spuštění</li>
         </ul>
       </div>
     </div>
   </section>
 
-  <section class="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
-    <h2 class="text-xl font-medium mb-8">Ukázkové projekty</h2>
-    <div class="grid md:grid-cols-3 gap-6">
+  <section style="max-width: 1360px; margin: 0 auto; padding: 40px 20px 80px; border-top: 2px solid #bc2938;">
+    <h2 style="font-size: clamp(1.5rem, 3vw, 2rem); margin: 0 0 32px; color: #bc2938;">Ukázkové projekty</h2>
+    <div class="grid-3col" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px;">
       {[
-        { name: 'Silo Jihlava',  url: 'silojihlava.cz',  desc: 'Komunitní a kulturní centrum Jihlava' },
-        { name: 'VyHUB',         url: 'vyhub.cz',         desc: 'Platforma udržitelných inovací Vysočina' },
-        { name: 'Do Jihlavy',    url: 'dojihlavy.cz',     desc: 'Průvodce městem #DoJihlavy' },
-      ].map(({ name, url, desc }) => (
-        <div class="p-5 rounded-xl border border-gray-100">
-          <p class="font-medium mb-1">{name}</p>
-          <p class="text-xs text-brand-600 mb-2">{url}</p>
-          <p class="text-sm text-gray-500">{desc}</p>
+        { name: 'Silo Jihlava',  href: 'https://www.silojihlava.cz',  url: 'silojihlava.cz',  desc: 'Komunitní a kulturní centrum Jihlava' },
+        { name: 'VyHUB',         href: 'https://www.vyhub.cz',         url: 'vyhub.cz',         desc: 'Platforma udržitelných inovací Vysočina' },
+        { name: 'Do Jihlavy',    href: 'https://www.dojihlavy.cz',     url: 'dojihlavy.cz',     desc: 'Průvodce městem #DoJihlavy' },
+      ].map(({ name, href, url, desc }) => (
+        <div class="box-default">
+          <h3 style="font-size: 1.1rem; margin: 0 0 8px;">{name}</h3>
+          <p style="font-size: 13px; color: #bc2938; opacity: 0.7; margin: 0 0 8px;">{url}</p>
+          <p style="font-size: 14px; font-weight: 300; margin: 0 0 16px;">{desc}</p>
+          <a href={href} target="_blank" rel="noopener noreferrer" class="btn-default" style="font-size: 13px;">Navštívit →</a>
         </div>
       ))}
     </div>
+    <a href="/kontakt" class="btn-primary">Chci web →</a>
   </section>
 
-  <section class="max-w-5xl mx-auto px-6 py-12">
-    <a href="/kontakt" class="inline-block bg-brand-600 text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-brand-700 transition-colors">
-      Chci web →
-    </a>
-  </section>
 </Layout>
