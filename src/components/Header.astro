@@ -1,50 +1,57 @@
 ---
-const navLinks = [
-  { href: '/weby',     label: 'Weby' },
-  { href: '/sluzby',   label: 'Služby' },
-  { href: '/strategie',label: 'Strategie' },
-  { href: '/projekty', label: 'Projekty' },
-  { href: '/bio',      label: 'Bio' },
-  { href: '/kontakt',  label: 'Kontakt' },
-];
-
 const current = Astro.url.pathname;
 ---
 
-<header class="border-b border-gray-100">
-  <div class="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
-    <a href="/" class="text-lg font-semibold tracking-tight hover:text-brand-600 transition-colors">
-      Kateřiny
+<header style="background-color: #fce6ef; position: sticky; top: 0; z-index: 50;">
+  <div style="max-width: 1360px; margin: 0 auto; padding: 20px 20px; display: flex; align-items: center; justify-content: space-between;">
+    <a href="/" style="font-family: 'Abril Fatface', cursive, Georgia, serif; font-size: 1.5rem; color: #bc2938; text-decoration: none; letter-spacing: -0.01em;">
+      Kateřiny. 🤝
     </a>
-    <nav class="hidden md:flex gap-6 text-sm">
-      {navLinks.map(({ href, label }) => (
-        <a
-          href={href}
-          class={`transition-colors ${current === href ? 'text-brand-600 font-medium' : 'text-gray-600 hover:text-gray-900'}`}
-        >
-          {label}
-        </a>
-      ))}
+    <nav class="desktop-nav" style="display: flex; gap: 0; align-items: center;">
+      <a href="/portfolio-sluzeb"
+        style={`font-family: Inter, sans-serif; font-size: 17px; font-weight: 400; color: #bc2938; text-decoration: none; padding: 10px 14px; ${current === '/portfolio-sluzeb' ? 'text-decoration: underline;' : ''}`}>
+        Portfolio služeb
+      </a>
+      <a href="/bio"
+        style={`font-family: Inter, sans-serif; font-size: 17px; font-weight: 400; color: #bc2938; text-decoration: none; padding: 10px 14px; ${current === '/bio' ? 'text-decoration: underline;' : ''}`}>
+        Bio
+      </a>
+      <a href="/#spojme-se"
+        style="font-family: Inter, sans-serif; font-size: 17px; font-weight: 400; color: #bc2938; text-decoration: none; padding: 10px 14px; border: 2px solid #bc2938; border-radius: 30px; margin-left: 8px; transition: background 0.2s, color 0.2s;"
+        onmouseover="this.style.background='#bc2938';this.style.color='#fce6ef'"
+        onmouseout="this.style.background='transparent';this.style.color='#bc2938'">
+        SPOJME SE
+      </a>
     </nav>
-    <!-- Mobile menu button (basic) -->
-    <button id="menu-toggle" class="md:hidden p-2 text-gray-600" aria-label="Otevřít menu">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <!-- Mobile toggle -->
+    <button id="menu-toggle" aria-label="Otevřít menu"
+      style="display: none; background: none; border: none; cursor: pointer; padding: 6px;">
+      <svg width="24" height="24" fill="none" stroke="#bc2938" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
       </svg>
     </button>
   </div>
   <!-- Mobile nav -->
-  <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100">
-    <nav class="max-w-5xl mx-auto px-6 py-4 flex flex-col gap-4 text-sm">
-      {navLinks.map(({ href, label }) => (
-        <a href={href} class="text-gray-700 hover:text-brand-600 transition-colors">{label}</a>
-      ))}
+  <div id="mobile-menu" style="display: none; background: #bc2938; padding: 20px;">
+    <nav style="display: flex; flex-direction: column; gap: 16px;">
+      <a href="/portfolio-sluzeb" style="color: #fce6ef; font-size: 16px; text-decoration: none;">Portfolio služeb</a>
+      <a href="/bio" style="color: #fce6ef; font-size: 16px; text-decoration: none;">Bio</a>
+      <a href="/#spojme-se" style="color: #fce6ef; font-size: 16px; text-decoration: none;">Spojme se</a>
     </nav>
   </div>
 </header>
 
+<style>
+  @media (max-width: 767px) {
+    .desktop-nav { display: none !important; }
+    #menu-toggle { display: block !important; }
+  }
+</style>
+
 <script>
   const btn = document.getElementById('menu-toggle');
   const menu = document.getElementById('mobile-menu');
-  btn?.addEventListener('click', () => menu?.classList.toggle('hidden'));
+  btn?.addEventListener('click', () => {
+    menu!.style.display = menu!.style.display === 'none' ? 'block' : 'none';
+  });
 </script>

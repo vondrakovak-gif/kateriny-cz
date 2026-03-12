@@ -2,22 +2,65 @@
 const year = new Date().getFullYear();
 ---
 
-<footer class="border-t border-gray-100 mt-24">
-  <div class="max-w-5xl mx-auto px-6 py-10 flex flex-col md:flex-row justify-between gap-6 text-sm text-gray-500">
-    <div>
-      <p class="font-medium text-gray-700">Kateřina Vondráková</p>
-      <p class="mt-1">Jihlava · Česká republika</p>
+<footer style="background-color: #323132; color: #fce6ef; margin-top: 80px;">
+  <div style="max-width: 1360px; margin: 0 auto; padding: 50px 20px 30px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 40px;">
+      <div>
+        <p style="font-family: 'Abril Fatface', cursive, serif; font-size: 1.2rem; color: #fce6ef; margin: 0 0 12px;">Ing. Kateřina Vondráková</p>
+        <p style="font-size: 15px; margin: 4px 0; color: #fce6ef;">
+          <a href="mailto:zeptamse@kateriny.cz" style="color: #ffffff; text-decoration: none;">zeptamse@kateriny.cz</a>
+        </p>
+        <p style="font-size: 15px; margin: 4px 0; color: #fce6ef;">
+          <a href="tel:+420721408001" style="color: #ffffff; text-decoration: none;">721 408 001</a>
+        </p>
+        <p style="font-size: 14px; margin: 12px 0 4px; color: #a2a2a2;">IČO: 04219775</p>
+        <p style="font-size: 14px; margin: 0; color: #a2a2a2;">Nejsem plátce DPH</p>
+      </div>
+      <div>
+        <p style="font-size: 14px; color: #a2a2a2; margin: 0 0 12px; text-transform: uppercase; letter-spacing: 0.05em;">Navigace</p>
+        <p style="margin: 6px 0;">
+          <a href="/portfolio-sluzeb" style="color: #ffffff; text-decoration: none; font-size: 15px;">Portfolio služeb</a>
+        </p>
+        <p style="margin: 6px 0;">
+          <a href="/bio" style="color: #ffffff; text-decoration: none; font-size: 15px;">Bio</a>
+        </p>
+        <p style="margin: 6px 0;">
+          <a href="/#spojme-se" style="color: #ffffff; text-decoration: none; font-size: 15px;">Spojme se</a>
+        </p>
+      </div>
+      <div>
+        <p style="font-size: 14px; color: #a2a2a2; margin: 0 0 12px; text-transform: uppercase; letter-spacing: 0.05em;">Sociální sítě</p>
+        <div style="display: flex; gap: 16px; margin-top: 4px;">
+          <a href="https://www.linkedin.com/in/katerina-vondrakova/" target="_blank" rel="noopener noreferrer"
+            style="color: #bc2938; width: 36px; height: 36px; background: #fce6ef; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/>
+              <circle cx="4" cy="4" r="2"/>
+            </svg>
+          </a>
+          <a href="https://www.instagram.com/kateriny.cz/" target="_blank" rel="noopener noreferrer"
+            style="color: #bc2938; width: 36px; height: 36px; background: #fce6ef; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
+            </svg>
+          </a>
+          <a href="https://www.facebook.com/kateriny.cz" target="_blank" rel="noopener noreferrer"
+            style="color: #bc2938; width: 36px; height: 36px; background: #fce6ef; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
     </div>
-    <div class="flex flex-col gap-1">
-      <a href="mailto:zeptamse@kateriny.cz" class="hover:text-gray-900 transition-colors">zeptamse@kateriny.cz</a>
-      <a href="tel:+420721408001" class="hover:text-gray-900 transition-colors">+420 721 408 001</a>
+    <div style="border-top: 1px solid #4a4a4a; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <p style="font-size: 14px; color: #a2a2a2; margin: 0;">Ing. Kateřina Vondráková / {year}</p>
+      <div style="display: flex; gap: 16px;">
+        <a href="/nastaveni-cookies" style="font-size: 13px; color: #a2a2a2; text-decoration: none;">Nastavení Cookies</a>
+        <a href="/zasady-ochrany-osobnich-udaju" style="font-size: 13px; color: #a2a2a2; text-decoration: none;">Zásady ochrany osobních údajů</a>
+      </div>
     </div>
-    <div class="flex flex-col gap-1">
-      <a href="/weby" class="hover:text-gray-900 transition-colors">Weby</a>
-      <a href="/sluzby" class="hover:text-gray-900 transition-colors">Služby</a>
-      <a href="/strategie" class="hover:text-gray-900 transition-colors">Strategie</a>
-      <a href="/bio" class="hover:text-gray-900 transition-colors">Bio</a>
-    </div>
-    <p class="self-end">© {year} Kateřiny</p>
   </div>
 </footer>

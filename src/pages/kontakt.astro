@@ -12,83 +12,22 @@ import Layout from '../layouts/Layout.astro';
   </section>
 
   <section class="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
-    <div class="grid md:grid-cols-2 gap-16">
-      <!-- Contact info -->
+    <div class="space-y-4 max-w-sm">
       <div>
-        <h2 class="text-lg font-medium mb-6">Přímý kontakt</h2>
-        <div class="space-y-4">
-          <div>
-            <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">E-mail</p>
-            <a href="mailto:zeptamse@kateriny.cz" class="text-brand-600 hover:underline">
-              zeptamse@kateriny.cz
-            </a>
-          </div>
-          <div>
-            <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Telefon</p>
-            <a href="tel:+420721408001" class="text-brand-600 hover:underline">
-              +420 721 408 001
-            </a>
-          </div>
-          <div>
-            <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Lokalita</p>
-            <p class="text-gray-700">Jihlava · Česká republika</p>
-          </div>
-        </div>
+        <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">E-mail</p>
+        <a href="mailto:zeptamse@kateriny.cz" class="text-brand-600 hover:underline">
+          zeptamse@kateriny.cz
+        </a>
       </div>
-
-      <!-- Contact form -->
       <div>
-        <h2 class="text-lg font-medium mb-6">Napsat zprávu</h2>
-        <form
-          name="kontakt"
-          method="POST"
-          data-netlify="true"
-          class="space-y-4"
-        >
-          <input type="hidden" name="form-name" value="kontakt" />
-          <div>
-            <label for="name" class="block text-sm text-gray-600 mb-1">Jméno</label>
-            <input
-              id="name"
-              type="text"
-              name="name"
-              required
-              class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-brand-400 transition-colors"
-              placeholder="Jana Nováková"
-            />
-          </div>
-          <div>
-            <label for="email" class="block text-sm text-gray-600 mb-1">E-mail</label>
-            <input
-              id="email"
-              type="email"
-              name="email"
-              required
-              class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-brand-400 transition-colors"
-              placeholder="jana@firma.cz"
-            />
-          </div>
-          <div>
-            <label for="message" class="block text-sm text-gray-600 mb-1">Zpráva</label>
-            <textarea
-              id="message"
-              name="message"
-              rows="5"
-              required
-              class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-brand-400 transition-colors resize-none"
-              placeholder="Popište stručně svůj projekt a co potřebujete..."
-            ></textarea>
-          </div>
-          <button
-            type="submit"
-            class="bg-brand-600 text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-brand-700 transition-colors"
-          >
-            Odeslat →
-          </button>
-        </form>
-        <p class="mt-4 text-xs text-gray-400">
-          Formulář odesílá přes Netlify Forms. Odpovím do 2 pracovních dnů.
-        </p>
+        <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Telefon</p>
+        <a href="tel:+420721408001" class="text-brand-600 hover:underline">
+          +420 721 408 001
+        </a>
+      </div>
+      <div>
+        <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Lokalita</p>
+        <p class="text-gray-700">Jihlava · Česká republika</p>
       </div>
     </div>
   </section>

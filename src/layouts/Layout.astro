@@ -19,10 +19,54 @@ const { title, description = 'Kateřina Vondráková — weby, služby, strategi
     <title>{title} | Kateřiny</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <style>
+      body { background-color: #fce6ef; color: #bc2938; font-family: 'Inter', Arial, sans-serif; font-weight: 300; }
+      h1, h2, h3, h4 { font-family: 'Abril Fatface', cursive, Georgia, serif; font-weight: 400; color: #bc2938; }
+      a { color: #bc2938; }
+      a:hover { color: #7b1922; }
+      .btn-default {
+        display: inline-block;
+        padding: 0.75em 1.6em;
+        border: 2px solid #bc2938;
+        border-radius: 30px;
+        color: #bc2938;
+        background: #fce6ef;
+        font-size: 15px;
+        text-decoration: none;
+        transition: background 0.2s, color 0.2s;
+      }
+      .btn-default:hover { background: #bc2938; color: #fce6ef; }
+      .btn-primary {
+        display: inline-block;
+        padding: 0.75em 1.6em;
+        border: 2px solid #bc2938;
+        border-radius: 30px;
+        color: #fce6ef;
+        background: #bc2938;
+        font-size: 15px;
+        text-decoration: none;
+        transition: background 0.2s, color 0.2s;
+      }
+      .btn-primary:hover { background: #fce6ef; color: #bc2938; }
+      .box-default {
+        border: 2px solid #bc2938;
+        border-radius: 29px;
+        padding: 37px 34px;
+        background: transparent;
+        color: #bc2938;
+      }
+      .box-secondary {
+        border: 2px solid #bc2938;
+        border-radius: 29px;
+        padding: 28px 46px;
+        background: #ffffff;
+        color: #bc2938;
+      }
+    </style>
   </head>
-  <body class="bg-white text-gray-900 font-sans antialiased">
+  <body>
     <Header />
     <main>
       <slot />

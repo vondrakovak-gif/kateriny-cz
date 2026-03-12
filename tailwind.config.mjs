@@ -4,16 +4,18 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'Arial', 'Helvetica', 'sans-serif'],
+        display: ['"Abril Fatface"', 'cursive', 'Georgia', '"Times New Roman"', 'serif'],
       },
       colors: {
-        brand: {
-          50:  '#f5f3ff',
-          100: '#ede9fe',
-          600: '#7c3aed',
-          700: '#6d28d9',
-          900: '#2e1065',
-        },
+        brand: '#bc2938',
+        'brand-dark': '#7b1922',
+        'brand-bg': '#fce6ef',
+        'footer-bg': '#323132',
+      },
+      borderRadius: {
+        'box': '29px',
+        'btn': '30px',
       },
     },
   },
