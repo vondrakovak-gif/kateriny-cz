@@ -23,7 +23,13 @@ const { title, description = 'Kateřina Vondráková — weby, služby, strategi
     <link rel="icon" type="image/png" href="/favicon.png" />
     <style>
       body { background-color: #fce6ef; color: #bc2938; font-family: 'Inter', Arial, sans-serif; font-weight: 300; }
-      h1, h2, h3, h4 { font-family: 'Abril Fatface', cursive, Georgia, serif; font-weight: 400; color: #bc2938; }
+      h1, h2, h3, h4 { font-family: 'Abril Fatface', cursive, Georgia, serif !important; font-weight: 400 !important; color: #bc2938; }
+      @media (max-width: 767px) {
+        .grid-3col { grid-template-columns: 1fr !important; }
+        .grid-2col { grid-template-columns: 1fr !important; }
+        .hide-mobile { display: none !important; }
+        .img-hero { max-width: 100% !important; width: 100% !important; }
+      }
       a { color: #bc2938; }
       a:hover { color: #7b1922; }
       .btn-default {

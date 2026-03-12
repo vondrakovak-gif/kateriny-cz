@@ -62,7 +62,7 @@ const klienti = ['O2', 'A2', 'KNIHLAVA', 'BROKIS', 'TASSIMO', 'ppm factum', 'ČD
   <!-- Navrhuji a tvořím -->
   <section style="max-width: 1360px; margin: 0 auto; padding: 60px 20px 40px;">
     <h1 style="font-size: clamp(2rem, 4vw, 3rem); margin: 0 0 32px; color: #bc2938;">🏗️ Navrhuji a tvořím</h1>
-    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 32px;">
+    <div class="grid-3col" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 32px;">
 
       <div class="box-default">
         <h2 style="font-size: 1.3rem; margin: 0 0 12px;">Weby</h2>
@@ -101,10 +101,10 @@ const klienti = ['O2', 'A2', 'KNIHLAVA', 'BROKIS', 'TASSIMO', 'ppm factum', 'ČD
     <h2 style="font-size: clamp(1.8rem, 3vw, 2.5rem); margin: 0 0 60px; color: #bc2938;">💡 Práce, co mi dělá radost</h2>
 
     {projekty.map((p) => (
-      <div style={`display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; margin-bottom: 80px; direction: ${p.imgLeft ? 'rtl' : 'ltr'};`}>
+      <div class="grid-2col" style={`display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; margin-bottom: 80px; direction: ${p.imgLeft ? 'rtl' : 'ltr'};`}>
         <div style="direction: ltr;">
           <img src={p.img} alt={p.name}
-            style="width: 100%; border-radius: 8px; border: 2px solid #bc2938;" />
+            style="width: 100%; border-radius: 8px;" />
         </div>
         <div style="direction: ltr;">
           <h3 style="font-size: clamp(1.5rem, 2.5vw, 2rem); margin: 0 0 8px; color: #bc2938;">{p.name}</h3>
