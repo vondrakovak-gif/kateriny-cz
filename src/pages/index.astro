@@ -1,0 +1,58 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Kateřina Vondráková" description="Weby, služby a strategie — Kateřina Vondráková, Jihlava">
+  <!-- Hero -->
+  <section class="max-w-5xl mx-auto px-6 pt-20 pb-16">
+    <p class="text-sm font-medium text-brand-600 uppercase tracking-widest mb-4">Kateřina Vondráková</p>
+    <h1 class="text-4xl md:text-6xl font-light leading-tight text-gray-900 mb-6">
+      weby · služby<br />· strategie
+    </h1>
+    <p class="text-lg text-gray-500 max-w-xl">
+      inovace · kultura · udržitelnost
+    </p>
+  </section>
+
+  <!-- Intro -->
+  <section class="max-w-5xl mx-auto px-6 py-16 border-t border-gray-100">
+    <div class="grid md:grid-cols-2 gap-12 items-start">
+      <div>
+        <h2 class="text-2xl font-light mb-6">Jak pracuju</h2>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          Rozumím kontextu, cílům a možnostem. Ptám se, navrhuji, tvořím, objevuji a testuji — abychom spolu
+          vymysleli strategii nebo službu a spustili web, který skutečně funguje.
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          Pracuju jako freelancerka z Jihlavy. Vybírám si projekty, které mají smysl — pro lidi, komunitu
+          nebo planetu.
+        </p>
+      </div>
+      <div class="space-y-6">
+        {[
+          { href: '/weby',      title: 'Weby',      desc: 'Krásné weby, které přinášejí výsledky. Stavím výhradně na Solidpixels.' },
+          { href: '/sluzby',    title: 'Služby',    desc: 'Navrhuju služby, které jsou přehledné, efektivní a atraktivní.' },
+          { href: '/strategie', title: 'Strategie', desc: 'Čím víc energie vložíš do strategie, tím víc ušetříš v realizaci.' },
+        ].map(({ href, title, desc }) => (
+          <a href={href} class="block group p-5 rounded-xl border border-gray-100 hover:border-brand-100 hover:bg-brand-50 transition-colors">
+            <p class="font-medium mb-1 group-hover:text-brand-700">{title} →</p>
+            <p class="text-sm text-gray-500">{desc}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="max-w-5xl mx-auto px-6 py-16 border-t border-gray-100">
+    <div class="bg-gray-50 rounded-2xl p-10 text-center">
+      <h2 class="text-2xl font-light mb-4">Pojďme se poznat</h2>
+      <p class="text-gray-600 mb-8 max-w-lg mx-auto">
+        Pojďme si dát krátkou schůzku / call, kde se seznámíme a řekneme si, zda naše spolupráce dává smysl.
+      </p>
+      <a href="/kontakt" class="inline-block bg-brand-600 text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-brand-700 transition-colors">
+        Napsat mi
+      </a>
+    </div>
+  </section>
+</Layout>

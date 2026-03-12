@@ -1,0 +1,68 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const projects = [
+  {
+    name: 'VyHUB',
+    url: 'vyhub.cz',
+    category: 'Inovace / Strategie / Web',
+    desc: 'Platforma udržitelných inovací Vysočinského kraje. Spolupráce se SUSTO – Sustainability Tools. Vznik celé platformy od strategie po web.',
+  },
+  {
+    name: 'Silo Jihlava',
+    url: 'silojihlava.cz',
+    category: 'Komunita / Web / PR',
+    desc: 'Komunitní a kulturní centrum v Jihlavě. Spoluzakládající členka, PR a finance. Solidpixels web.',
+  },
+  {
+    name: 'BROKISGLASS',
+    url: 'brokisglass.com',
+    category: 'UX Design',
+    desc: 'UX design konfigurárorů pro Janštejnskou sklárnu (Janštejn Glass Group). Realizováno přes GoatLabs.',
+  },
+  {
+    name: 'Hero Clan',
+    url: 'heroclan.cz',
+    category: 'Produkt / Komunita',
+    desc: 'Neveřejná databáze propojující dobrovolníky s neziskovými organizacemi. Spoluautorka projektu (s Veronikou Kovářovou), vznik 2017. Ocenění Social Impact Award 2017.',
+  },
+  {
+    name: 'Do Jihlavy',
+    url: 'dojihlavy.cz',
+    category: 'Web / Lokální komunita',
+    desc: 'Průvodce po Jihlavě a okolí. Solidpixels web.',
+  },
+];
+---
+
+<Layout title="Projekty" description="Vybrané projekty — weby, strategie, inovace.">
+  <section class="max-w-5xl mx-auto px-6 pt-16 pb-8">
+    <p class="text-sm font-medium text-brand-600 uppercase tracking-widest mb-4">Projekty</p>
+    <h1 class="text-4xl md:text-5xl font-light mb-6">Vybrané projekty</h1>
+    <p class="text-xl text-gray-500 max-w-2xl">
+      Weby, platformy, komunity a inovace — projekty, na kterých mi záleží.
+    </p>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
+    <div class="space-y-6">
+      {projects.map(({ name, url, category, desc }) => (
+        <div class="p-6 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors">
+          <div class="flex flex-wrap items-baseline gap-4 mb-2">
+            <h2 class="text-lg font-medium">{name}</h2>
+            <span class="text-xs text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full">{category}</span>
+            <span class="text-sm text-gray-400">{url}</span>
+          </div>
+          <p class="text-gray-600 text-sm leading-relaxed">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 py-12">
+    <p class="text-gray-500 mb-6">Máš projekt, na kterém stojí za to pracovat?</p>
+    <a href="/kontakt" class="inline-block bg-brand-600 text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-brand-700 transition-colors">
+      Pojďme si promluvit →
+    </a>
+  </section>
+</Layout>

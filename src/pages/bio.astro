@@ -1,0 +1,94 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const education = [
+  { title: 'Ing.', note: 'VŠE Praha, Fakulta národohospodářská' },
+  { title: 'Grafický design', note: 'Scholastika' },
+  { title: 'UX design & HTML/CSS', note: 'Czechitas' },
+  { title: 'Umělecká fotografie', note: 'Matela Studio' },
+  { title: 'Business English', note: 'M.L.S. International College, UK' },
+  { title: 'Yoga Teacher Training', note: '' },
+];
+
+const media = [
+  'Forbes — Young Leaders',
+  'Respekt',
+  'Česká televize / Dobré ráno',
+  'Asociace společenské odpovědnosti / Ceny SDGs 2019',
+  'Radio Wave',
+  'Aktuálně.cz',
+  'Starty.cz',
+  'Jihlavské listy',
+  'Dobrovolník.cz',
+];
+---
+
+<Layout title="Bio" description="Kteřina Vondráková — vzdělání, projekty, média.">
+  <section class="max-w-5xl mx-auto px-6 pt-16 pb-8">
+    <p class="text-sm font-medium text-brand-600 uppercase tracking-widest mb-4">Bio</p>
+    <h1 class="text-4xl md:text-5xl font-light mb-6">Kateřina Vondráková</h1>
+    <p class="text-xl text-gray-500 max-w-2xl">
+      Designer, stratég a stavitelka webů. Freelancerka v Jihlavě.
+    </p>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
+    <div class="grid md:grid-cols-2 gap-12">
+      <div>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          Z Prahy jsem se přestěhovala do Jihlavy — vědomě, s odstupem od přepracování a rychlého tempa.
+          Pracuju jako freelancerka, vybírám projekty s přesahem a spolupracuju s lidmi, kteří chtějí
+          dělat věci pořádně.
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          Zaměřuji se na oblast kultury, komunit, vzdělávání, udržitelnosti a sociální inovace.
+        </p>
+      </div>
+      <div>
+        <h2 class="text-lg font-medium mb-4">Vzdělání</h2>
+        <ul class="space-y-2">
+          {education.map(({ title, note }) => (
+            <li class="text-sm text-gray-600">
+              <span class="font-medium">{title}</span>
+              {note && <span class="text-gray-400"> — {note}</span>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
+    <h2 class="text-lg font-medium mb-6">Klíčové projekty</h2>
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="p-6 rounded-xl border border-gray-100">
+        <h3 class="font-medium mb-2">Hero Clan</h3>
+        <p class="text-xs text-brand-600 mb-3">heroclan.cz · spoluzaloženo 2017</p>
+        <p class="text-sm text-gray-600 leading-relaxed">
+          Neveřejná databáze propojující kvalifikované dobrovolníky s neziskovými organizacemi.
+          Spoluzaloženo s Veronikou Kovářovou. Ocenění Social Impact Award 2017.
+        </p>
+      </div>
+      <div class="p-6 rounded-xl border border-gray-100">
+        <h3 class="font-medium mb-2">Silo Jihlava</h3>
+        <p class="text-xs text-brand-600 mb-3">silojihlava.cz · spoluzakládající členka</p>
+        <p class="text-sm text-gray-600 leading-relaxed">
+          Komunitní a kulturní centrum v Jihlavě. V jádrovém týmu mám na starosti PR a finance.
+          Všichni členové jsou dobrovolní a neplacení.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
+    <h2 class="text-lg font-medium mb-6">Média a ocenění</h2>
+    <ul class="grid md:grid-cols-3 gap-3">
+      {media.map(item => (
+        <li class="text-sm text-gray-600 flex gap-2">
+          <span class="text-brand-400">·</span>
+          {item}
+        </li>
+      ))}
+    </ul>
+  </section>
+</Layout>

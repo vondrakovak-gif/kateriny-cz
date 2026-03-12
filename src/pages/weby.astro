@@ -1,0 +1,69 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Weby" description="Stavím weby na Solidpixels — krásné i výkonné.">
+  <section class="max-w-5xl mx-auto px-6 pt-16 pb-8">
+    <p class="text-sm font-medium text-brand-600 uppercase tracking-widest mb-4">Weby</p>
+    <h1 class="text-4xl md:text-5xl font-light mb-6">Weby, které fungují</h1>
+    <p class="text-xl text-gray-500 max-w-2xl">
+      Krásný web nestačí. Musí přivádět zákazníky, sdělovat hodnotu a dávat smysl.
+    </p>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
+    <div class="grid md:grid-cols-2 gap-12">
+      <div>
+        <h2 class="text-xl font-medium mb-4">Solidpixels</h2>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          Stavím výhradně na českém CMS <strong>Solidpixels</strong> — platformě, která spojuje estetiku
+          s maximální funkcionalitou. Používá ji prezident Pavel, DOX, Silo Jihlava i spousta dalších.
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          Klient po předání webu nepotřebuje programátora — obsah si spravuje sám, jednoduše a bezpečně.
+        </p>
+      </div>
+      <div>
+        <h2 class="text-xl font-medium mb-4">Co dostaneš</h2>
+        <ul class="space-y-3 text-gray-600">
+          {[
+            'Analýza potřeb a cílové skupiny',
+            'Návrh struktury a obsahu',
+            'Grafický design na míru',
+            'Implementace a testování',
+            'Předání s instrukcemi',
+            'Podpora po spuštění',
+          ].map(item => (
+            <li class="flex gap-3">
+              <span class="text-brand-600 mt-0.5">✓</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
+    <h2 class="text-xl font-medium mb-8">Ukázkové projekty</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+      {[
+        { name: 'Silo Jihlava',  url: 'silojihlava.cz',  desc: 'Komunitní a kulturní centrum Jihlava' },
+        { name: 'VyHUB',         url: 'vyhub.cz',         desc: 'Platforma udržitelných inovací Vysočina' },
+        { name: 'Do Jihlavy',    url: 'dojihlavy.cz',     desc: 'Průvodce městem #DoJihlavy' },
+      ].map(({ name, url, desc }) => (
+        <div class="p-5 rounded-xl border border-gray-100">
+          <p class="font-medium mb-1">{name}</p>
+          <p class="text-xs text-brand-600 mb-2">{url}</p>
+          <p class="text-sm text-gray-500">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 py-12">
+    <a href="/kontakt" class="inline-block bg-brand-600 text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-brand-700 transition-colors">
+      Chci web →
+    </a>
+  </section>
+</Layout>

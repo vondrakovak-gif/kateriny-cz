@@ -1,0 +1,59 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Strategie" description="Čím víc energie vložíš do strategie, tím víc ušetříš v realizaci.">
+  <section class="max-w-5xl mx-auto px-6 pt-16 pb-8">
+    <p class="text-sm font-medium text-brand-600 uppercase tracking-widest mb-4">Strategie</p>
+    <h1 class="text-4xl md:text-5xl font-light mb-6">Strategie projektu</h1>
+    <p class="text-xl text-gray-500 max-w-2xl">
+      Čím víc energie vložíš do strategie, tím víc ušetříš v realizaci — a vyhnout se slepým uličkám,
+      které stojí čas i peníze.
+    </p>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
+    <div class="grid md:grid-cols-3 gap-8">
+      {[
+        {
+          title: 'Kde jsi',
+          desc: 'Analýza aktuálního stavu — produkt, trh, zákazníci, konkurence, silné a slabé stránky.',
+        },
+        {
+          title: 'Kam chceš',
+          desc: 'Definice cílů, vizí a priorit. Co musí být hotovo za rok, za půl roku, za měsíc?',
+        },
+        {
+          title: 'Jak se tam dostaneš',
+          desc: 'Konkrétní cestovní mapa s kroky, milníky a způsobem měření úspěchu.',
+        },
+      ].map(({ title, desc }) => (
+        <div class="p-6 rounded-xl bg-gray-50">
+          <h3 class="font-medium mb-3">{title}</h3>
+          <p class="text-sm text-gray-600 leading-relaxed">{desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 py-12 border-t border-gray-100">
+    <h2 class="text-xl font-medium mb-6">Pro koho to je</h2>
+    <div class="grid md:grid-cols-2 gap-6 text-gray-600">
+      <div>
+        <p class="leading-relaxed mb-4">
+          Projekty, které mají nápad, ale nevědí kudy dál. Firmy, které cítí, že něco nefunguje,
+          ale neumí pojmenovat co. Founders na začátku, kteří chtějí šlápnout správnou nohou.
+        </p>
+      </div>
+      <div>
+        <p class="leading-relaxed">
+          Zaměřuji se na projekty s přesahem — v oblasti kultury, komunit, vzdělávání,
+          udržitelnosti a sociální inovace.
+        </p>
+      </div>
+    </div>
+    <a href="/kontakt" class="inline-block mt-8 bg-brand-600 text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-brand-700 transition-colors">
+      Domluvit konzultaci →
+    </a>
+  </section>
+</Layout>

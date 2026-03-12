@@ -1,0 +1,50 @@
+---
+const navLinks = [
+  { href: '/weby',     label: 'Weby' },
+  { href: '/sluzby',   label: 'Služby' },
+  { href: '/strategie',label: 'Strategie' },
+  { href: '/projekty', label: 'Projekty' },
+  { href: '/bio',      label: 'Bio' },
+  { href: '/kontakt',  label: 'Kontakt' },
+];
+
+const current = Astro.url.pathname;
+---
+
+<header class="border-b border-gray-100">
+  <div class="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
+    <a href="/" class="text-lg font-semibold tracking-tight hover:text-brand-600 transition-colors">
+      Kateřiny
+    </a>
+    <nav class="hidden md:flex gap-6 text-sm">
+      {navLinks.map(({ href, label }) => (
+        <a
+          href={href}
+          class={`transition-colors ${current === href ? 'text-brand-600 font-medium' : 'text-gray-600 hover:text-gray-900'}`}
+        >
+          {label}
+        </a>
+      ))}
+    </nav>
+    <!-- Mobile menu button (basic) -->
+    <button id="menu-toggle" class="md:hidden p-2 text-gray-600" aria-label="Otevřít menu">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+  </div>
+  <!-- Mobile nav -->
+  <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100">
+    <nav class="max-w-5xl mx-auto px-6 py-4 flex flex-col gap-4 text-sm">
+      {navLinks.map(({ href, label }) => (
+        <a href={href} class="text-gray-700 hover:text-brand-600 transition-colors">{label}</a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  btn?.addEventListener('click', () => menu?.classList.toggle('hidden'));
+</script>
