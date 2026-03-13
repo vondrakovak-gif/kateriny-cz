@@ -9,8 +9,8 @@ import Layout from '../layouts/Layout.astro';
     <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.1; margin: 0 0 40px; color: #bc2938;">
       Baví mě hledat kreativní řešení<br />a tavit představy ve stavy.
     </h1>
-    <div style="display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: start;">
-    <div>
+    <div class="bio-hero-grid" style="display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: start;">
+    <div class="bio-text">
       <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px;">
         <li style="display: flex; gap: 12px; align-items: flex-start; font-size: 1rem; font-weight: 300; line-height: 1.6; color: #bc2938;">
           <span>🏆</span>
@@ -47,7 +47,7 @@ import Layout from '../layouts/Layout.astro';
         </li>
       </ul>
     </div>
-    <div style="flex-shrink: 0;">
+    <div class="bio-photo" style="flex-shrink: 0;">
       <img src="/images/katerina_foto.png" alt="Kateřina Vondráková"
         style="width: 320px; max-width: 100%; object-fit: cover;" />
     </div>
@@ -188,6 +188,15 @@ import Layout from '../layouts/Layout.astro';
     section[style*="grid-template-columns: 1fr auto"],
     section[style*="grid-template-columns: 1fr 1fr"] {
       grid-template-columns: 1fr !important;
+    }
+    .bio-hero-grid {
+      grid-template-columns: 1fr !important;
+    }
+    .bio-photo {
+      order: -1;
+    }
+    .bio-photo img {
+      width: 100% !important;
     }
   }
 </style>
