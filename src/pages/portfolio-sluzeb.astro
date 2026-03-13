@@ -64,7 +64,6 @@ const projekty = [
   },
 ];
 
-const klienti = ['O2', 'A2', 'KNIHLAVA', 'BROKIS', 'TASSIMO', 'ppm factum', 'ČDF', 'Chelsey Skills'];
 ---
 
 <Layout title="Portfolio služeb" description="Weby, service design, strategie — práce Kateřiny Vondráková.">
@@ -130,12 +129,9 @@ const klienti = ['O2', 'A2', 'KNIHLAVA', 'BROKIS', 'TASSIMO', 'ppm factum', 'ČD
   <!-- A mnoho dalších -->
   <section style="max-width: 1100px; margin: 0 auto; padding: 40px 20px 80px; border-top: 2px solid #bc2938;">
     <h2 style="font-size: clamp(1.8rem, 3vw, 2.5rem); margin: 0 0 32px; color: #bc2938;">A mnoho dalších...</h2>
-    <div class="box-secondary" style="max-width: 600px;">
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; align-items: center;">
-        {klienti.map((k) => (
-          <div style="text-align: center; font-size: 13px; font-weight: 500; color: #bc2938; padding: 8px 0;">{k}</div>
-        ))}
-      </div>
+    <div style="display: inline-block; background: #ffffff; border: 2px solid #bc2938; border-radius: 16px; padding: 24px; max-width: 600px;">
+      <img src="/images/loga_web_vondrakova.png" alt="Klienti: O2, A2, Knihlava, Brokis, Tassimo, ppm factum, ČDF, Chelsey Skills"
+        style="width: 100%; display: block;" />
     </div>
   </section>
 
