@@ -1,23 +1,29 @@
 ---
 export const prerender = false;
 import FakturaceLayout from '../../layouts/FakturaceLayout.astro';
-import { getFaktury } from '../../lib/fakturace/sheets';
+import { getFaktury } from '../../lib/fakturace/kv';
+import { getDodavatel } from '../../lib/fakturace/dodavatel';
 
-let nextCislo = `${new Date().getFullYear()}001`;
+const dodavatel = getDodavatel();
+
+const rok = new Date().getFullYear();
+let nextNum = 1;
 try {
   const faktury = await getFaktury();
-  const letosni = faktury.filter(f => f.cislo.startsWith(String(new Date().getFullYear())));
+  const letosni = faktury.filter(f => f.cislo.startsWith(`${rok}-`));
   if (letosni.length > 0) {
-    const maxNum = Math.max(...letosni.map(f => parseInt(f.cislo.slice(4)) || 0));
-    nextCislo = `${new Date().getFullYear()}${String(maxNum + 1).padStart(3, '0')}`;
+    const max = Math.max(...letosni.map(f => parseInt(f.cislo.split('-')[1] ?? '0') || 0));
+    nextNum = max + 1;
   }
 } catch {}
 
+const nextCislo = `${rok}-${String(nextNum).padStart(4, '0')}`;
+const nextVS = `${rok}${String(nextNum).padStart(4, '0')}`;
 const dnes = new Date().toISOString().split('T')[0];
 const splatnost = new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0];
 ---
 <FakturaceLayout title="Nová faktura">
-  <div style="max-width:800px;margin:0 auto;padding:24px 20px;">
+  <div style="max-width:820px;margin:0 auto;padding:24px 20px;">
 
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
       <a href="/fakturace" style="color:#888;font-size:14px;">← Zpět</a>
@@ -28,11 +34,15 @@ const splatnost = new Date(Date.now() + 14 * 86400000).toISOString().split('T')[
 
       <!-- Základní info -->
       <div class="card" style="margin-bottom:16px;">
-        <h2 style="font-size:15px;font-weight:600;margin-bottom:16px;">Základní informace</h2>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+        <h2 style="font-size:14px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;">Základní informace</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;">
           <div>
             <label>Číslo faktury</label>
             <input type="text" name="cislo" value={nextCislo} required />
+          </div>
+          <div>
+            <label>Variabilní symbol</label>
+            <input type="text" name="variabilniSymbol" id="variabilniSymbol" value={nextVS} required />
           </div>
           <div>
             <label>Datum vystavení</label>
@@ -48,13 +58,13 @@ const splatnost = new Date(Date.now() + 14 * 86400000).toISOString().split('T')[
       <!-- Klient -->
       <div class="card" style="margin-bottom:16px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-          <h2 style="font-size:15px;font-weight:600;">Klient</h2>
+          <h2 style="font-size:14px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em;">Odběratel</h2>
           <div style="display:flex;gap:8px;align-items:center;">
-            <input type="text" id="icoSearch" placeholder="Hledat dle IČO" style="width:160px;" />
+            <input type="text" id="icoSearch" placeholder="Hledat dle IČO" style="width:150px;" />
             <button type="button" id="aresBtn" class="btn btn-outline btn-sm">Najít v ARES</button>
+            <span id="aresStatus" style="font-size:13px;color:#888;display:none;"></span>
           </div>
         </div>
-        <div id="aresStatus" style="font-size:13px;color:#888;margin-bottom:12px;display:none;"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
           <div style="grid-column:1/-1;">
             <label>Název firmy / jméno</label>
@@ -73,7 +83,7 @@ const splatnost = new Date(Date.now() + 14 * 86400000).toISOString().split('T')[
             <input type="text" name="klientAdresa" id="klientAdresa" required />
           </div>
           <div style="grid-column:1/-1;">
-            <label>E-mail</label>
+            <label>E-mail (nepovinné)</label>
             <input type="email" name="klientEmail" />
           </div>
         </div>
@@ -82,30 +92,29 @@ const splatnost = new Date(Date.now() + 14 * 86400000).toISOString().split('T')[
       <!-- Položky -->
       <div class="card" style="margin-bottom:16px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-          <h2 style="font-size:15px;font-weight:600;">Položky</h2>
+          <h2 style="font-size:14px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em;">Položky</h2>
           <button type="button" id="pridatPolozku" class="btn btn-outline btn-sm">+ Přidat položku</button>
         </div>
         <div id="polozky">
-          <div class="polozka" style="display:grid;grid-template-columns:3fr 1fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:10px;">
+          <div class="polozka" style="display:grid;grid-template-columns:3fr 1fr 1fr 1.2fr auto;gap:10px;align-items:end;margin-bottom:10px;">
             <div><label>Popis</label><input type="text" name="popis[]" required /></div>
             <div><label>Množství</label><input type="number" name="mnozstvi[]" value="1" min="0.01" step="0.01" required class="mnozstvi" /></div>
             <div><label>Jednotka</label><input type="text" name="jednotka[]" value="hod" /></div>
             <div><label>Cena/j. (Kč)</label><input type="number" name="cenaJednotka[]" min="0" step="0.01" required class="cenaJednotka" /></div>
-            <div style="padding-bottom:2px;"><button type="button" class="smazatPolozku btn btn-sm" style="background:#fde8ea;color:#bc2938;margin-top:20px;" disabled>✕</button></div>
+            <div><button type="button" class="smazatPolozku btn btn-sm" style="background:#fde8ea;color:#bc2938;margin-top:20px;border:none;" disabled>✕</button></div>
           </div>
         </div>
-        <div style="border-top:1.5px solid #f0ebe5;margin-top:16px;padding-top:14px;">
-          <div style="display:flex;justify-content:flex-end;gap:16px;align-items:center;">
-            <div style="font-size:14px;color:#555;">
-              DPH: <select name="dph" id="dphSelect" style="width:auto;display:inline-block;padding:4px 8px;">
-                <option value="0">0% (neplátce)</option>
-                <option value="12">12%</option>
-                <option value="21">21%</option>
-              </select>
-            </div>
-            <div style="font-size:16px;font-weight:600;">
-              Celkem: <span id="celkemDisplay">0 Kč</span>
-            </div>
+        <div style="border-top:1.5px solid #f0ebe5;margin-top:12px;padding-top:14px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-size:13px;color:#888;">
+            DPH:
+            <select name="dph" id="dphSelect" style="display:inline-block;width:auto;padding:4px 8px;margin-left:6px;">
+              <option value="0">0% (neplátce)</option>
+              <option value="12">12%</option>
+              <option value="21">21%</option>
+            </select>
+          </div>
+          <div style="font-size:18px;font-weight:700;color:#bc2938;">
+            Celkem: <span id="celkemDisplay">0 Kč</span>
           </div>
         </div>
       </div>
@@ -113,7 +122,7 @@ const splatnost = new Date(Date.now() + 14 * 86400000).toISOString().split('T')[
       <!-- Poznámka -->
       <div class="card" style="margin-bottom:20px;">
         <label>Poznámka (nepovinné)</label>
-        <textarea name="poznamka" rows="3" style="resize:vertical;"></textarea>
+        <textarea name="poznamka" rows="2" style="resize:vertical;margin-top:4px;"></textarea>
       </div>
 
       <input type="hidden" name="celkemBezDph" id="celkemBezDph" />
@@ -127,13 +136,20 @@ const splatnost = new Date(Date.now() + 14 * 86400000).toISOString().split('T')[
   </div>
 
   <script>
-    // ARES vyhledávání
+    // Variabilní symbol se generuje z čísla faktury
+    document.querySelector('[name="cislo"]')?.addEventListener('input', function(this: HTMLInputElement) {
+      const vs = this.value.replace(/\D/g, '');
+      (document.getElementById('variabilniSymbol') as HTMLInputElement).value = vs;
+    });
+
+    // ARES
     document.getElementById('aresBtn')?.addEventListener('click', async () => {
       const ico = (document.getElementById('icoSearch') as HTMLInputElement).value.trim();
       if (!ico) return;
       const status = document.getElementById('aresStatus')!;
-      status.style.display = 'block';
-      status.textContent = 'Hledám v ARES...';
+      status.style.display = 'inline';
+      status.style.color = '#888';
+      status.textContent = 'Hledám…';
       try {
         const res = await fetch(`/api/fakturace/ares?ico=${encodeURIComponent(ico)}`);
         const data = await res.json();
@@ -144,57 +160,47 @@ const splatnost = new Date(Date.now() + 14 * 86400000).toISOString().split('T')[
         (document.getElementById('klientAdresa') as HTMLInputElement).value = data.adresa ?? '';
         status.textContent = '✓ Nalezeno';
         status.style.color = '#16a34a';
-      } catch {
-        status.textContent = '⚠️ Chyba při vyhledávání';
-      }
+      } catch { status.textContent = '⚠️ Chyba'; }
     });
 
-    // Položky — přidání/smazání
-    function updateButtons() {
+    // Přidat/smazat položku
+    function updateDeleteBtns() {
       const btns = document.querySelectorAll<HTMLButtonElement>('.smazatPolozku');
       btns.forEach(b => b.disabled = btns.length === 1);
     }
-
     document.getElementById('pridatPolozku')?.addEventListener('click', () => {
       const container = document.getElementById('polozky')!;
-      const first = container.querySelector('.polozka')!;
-      const clone = first.cloneNode(true) as HTMLElement;
+      const clone = (container.querySelector('.polozka') as HTMLElement).cloneNode(true) as HTMLElement;
       clone.querySelectorAll('input').forEach(i => {
         if (i.name === 'mnozstvi[]') i.value = '1';
         else if (i.name === 'jednotka[]') i.value = 'hod';
         else i.value = '';
       });
-      clone.querySelector('.smazatPolozku')!.addEventListener('click', function(this: HTMLElement) {
-        this.closest('.polozka')!.remove();
-        updateButtons();
-        vypocitej();
+      clone.querySelector('.smazatPolozku')?.addEventListener('click', function(this: HTMLElement) {
+        this.closest('.polozka')?.remove(); updateDeleteBtns(); vypocitej();
       });
       container.appendChild(clone);
-      updateButtons();
+      updateDeleteBtns();
     });
-
     document.querySelector('.smazatPolozku')?.addEventListener('click', function(this: HTMLElement) {
-      this.closest('.polozka')!.remove();
-      updateButtons();
-      vypocitej();
+      this.closest('.polozka')?.remove(); updateDeleteBtns(); vypocitej();
     });
 
-    // Výpočet celkové částky
+    // Výpočet
     function vypocitej() {
       let suma = 0;
       document.querySelectorAll('.polozka').forEach(p => {
-        const mnozstvi = parseFloat((p.querySelector('.mnozstvi') as HTMLInputElement).value) || 0;
-        const cena = parseFloat((p.querySelector('.cenaJednotka') as HTMLInputElement).value) || 0;
-        suma += mnozstvi * cena;
+        const m = parseFloat((p.querySelector('.mnozstvi') as HTMLInputElement).value) || 0;
+        const c = parseFloat((p.querySelector('.cenaJednotka') as HTMLInputElement).value) || 0;
+        suma += m * c;
       });
       const dph = parseFloat((document.getElementById('dphSelect') as HTMLSelectElement).value) || 0;
       const sDph = suma * (1 + dph / 100);
-      const fmt = new Intl.NumberFormat('cs-CZ', { maximumFractionDigits: 0 });
-      document.getElementById('celkemDisplay')!.textContent = `${fmt.format(sDph)} Kč`;
+      document.getElementById('celkemDisplay')!.textContent =
+        new Intl.NumberFormat('cs-CZ', { maximumFractionDigits: 2 }).format(sDph) + ' Kč';
       (document.getElementById('celkemBezDph') as HTMLInputElement).value = String(Math.round(suma * 100) / 100);
       (document.getElementById('celkemSDph') as HTMLInputElement).value = String(Math.round(sDph * 100) / 100);
     }
-
     document.getElementById('polozky')!.addEventListener('input', vypocitej);
     document.getElementById('dphSelect')!.addEventListener('change', vypocitej);
   </script>

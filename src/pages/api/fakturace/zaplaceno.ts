@@ -1,7 +1,7 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
-import { updateZaplaceno } from '../../../lib/fakturace/sheets';
+import { updateZaplaceno } from '../../../lib/fakturace/kv';
 
 export const POST: APIRoute = async ({ request, redirect }) => {
   const data = await request.formData();
@@ -15,5 +15,6 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     console.error('Chyba při aktualizaci stavu:', e);
   }
 
-  return redirect('/fakturace');
+  const referer = request.headers.get('referer') ?? '/fakturace';
+  return redirect(referer.includes(cislo) ? `/fakturace/${encodeURIComponent(cislo)}` : '/fakturace');
 };

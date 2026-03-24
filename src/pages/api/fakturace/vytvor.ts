@@ -1,7 +1,7 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
-import { saveFaktura } from '../../../lib/fakturace/sheets';
+import { saveFaktura } from '../../../lib/fakturace/kv';
 import type { Faktura, Polozka } from '../../../lib/fakturace/types';
 
 export const POST: APIRoute = async ({ request, redirect }) => {
@@ -17,12 +17,14 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     mnozstvi: mnozstvi[i],
     jednotka: jednotky[i],
     cenaJednotka: ceny[i],
-    celkem: mnozstvi[i] * ceny[i],
+    celkem: Math.round(mnozstvi[i] * ceny[i] * 100) / 100,
   }));
 
+  const cislo = data.get('cislo')?.toString() ?? '';
   const faktura: Faktura = {
-    id: data.get('cislo')?.toString() ?? '',
-    cislo: data.get('cislo')?.toString() ?? '',
+    id: cislo,
+    cislo,
+    variabilniSymbol: data.get('variabilniSymbol')?.toString() ?? cislo.replace(/\D/g, ''),
     datum: data.get('datum')?.toString() ?? '',
     datumSplatnosti: data.get('datumSplatnosti')?.toString() ?? '',
     klient: {
@@ -43,8 +45,8 @@ export const POST: APIRoute = async ({ request, redirect }) => {
   try {
     await saveFaktura(faktura);
   } catch (e) {
-    console.error('Chyba při ukládání do Google Sheets:', e);
+    console.error('Chyba při ukládání do KV:', e);
   }
 
-  return redirect(`/fakturace/${faktura.cislo}`);
+  return redirect(`/fakturace/${encodeURIComponent(faktura.cislo)}`);
 };

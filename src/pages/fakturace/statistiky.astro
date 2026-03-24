@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
 import FakturaceLayout from '../../layouts/FakturaceLayout.astro';
-import { getFaktury } from '../../lib/fakturace/sheets';
+import { getFaktury } from '../../lib/fakturace/kv';
 import type { Faktura } from '../../lib/fakturace/types';
 
 const rokParam = Astro.url.searchParams.get('rok');
@@ -14,21 +14,22 @@ let chyba = '';
 try {
   vsechneFaktury = await getFaktury();
 } catch {
-  chyba = 'Google Sheets není propojeno.';
+  chyba = 'Vercel KV není propojeno.';
 }
 
 const roky = [...new Set(vsechneFaktury.map(f => f.datum?.substring(0, 4)).filter(Boolean))].sort((a, b) => b.localeCompare(a));
+if (!roky.includes(String(rok))) roky.unshift(String(rok));
 
 const faktury = vsechneFaktury.filter(f => f.datum?.startsWith(String(rok)));
 
 const mesice = Array.from({ length: 12 }, (_, i) => {
   const m = String(i + 1).padStart(2, '0');
-  const mFaktury = faktury.filter(f => f.datum?.startsWith(`${rok}-${m}`));
+  const mF = faktury.filter(f => f.datum?.startsWith(`${rok}-${m}`));
   return {
     nazev: new Date(rok, i, 1).toLocaleDateString('cs-CZ', { month: 'long' }),
-    celkem: mFaktury.reduce((s, f) => s + f.celkemSDph, 0),
-    zaplaceno: mFaktury.filter(f => f.zaplaceno).reduce((s, f) => s + f.celkemSDph, 0),
-    pocet: mFaktury.length,
+    celkem: mF.reduce((s, f) => s + f.celkemSDph, 0),
+    zaplaceno: mF.filter(f => f.zaplaceno).reduce((s, f) => s + f.celkemSDph, 0),
+    pocet: mF.length,
   };
 });
 
@@ -59,11 +60,10 @@ function fmt(c: number) {
         <a href="/fakturace" style="color:#888;font-size:14px;">← Zpět</a>
         <h1 style="font-size:22px;font-weight:600;">Statistiky {rok}</h1>
       </div>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:6px;">
         {roky.map(r => (
           <a href={`/fakturace/statistiky?rok=${r}`}
-             class="btn btn-sm"
-             style={r === String(rok) ? 'background:#bc2938;color:#fff;' : 'background:#f0ebe5;color:#555;'}>
+             style={`padding:5px 12px;border-radius:6px;font-size:13px;font-weight:500;text-decoration:none;${r === String(rok) ? 'background:#bc2938;color:#fff;' : 'background:#f0ebe5;color:#555;'}`}>
             {r}
           </a>
         ))}
@@ -72,7 +72,6 @@ function fmt(c: number) {
 
     {chyba && <div style="background:#fde8ea;padding:14px;border-radius:8px;margin-bottom:16px;">{chyba}</div>}
 
-    <!-- Souhrn -->
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;">
       <div class="card">
         <div style="font-size:12px;color:#888;margin-bottom:4px;">Celkový obrat {rok}</div>
@@ -84,7 +83,7 @@ function fmt(c: number) {
       </div>
       <div class="card">
         <div style="font-size:12px;color:#888;margin-bottom:4px;">Čeká na platbu</div>
-        <div style="font-size:20px;font-weight:700;color:{nezaplaceno > 0 ? '#d97706' : '#16a34a'};">{fmt(nezaplaceno)}</div>
+        <div style="font-size:20px;font-weight:700;" style={`color:${nezaplaceno > 0 ? '#d97706' : '#16a34a'}`}>{fmt(nezaplaceno)}</div>
       </div>
       <div class="card">
         <div style="font-size:12px;color:#888;margin-bottom:4px;">Počet faktur</div>
@@ -92,14 +91,18 @@ function fmt(c: number) {
       </div>
     </div>
 
-    <!-- Graf po měsících -->
+    <!-- Graf -->
     <div class="card" style="margin-bottom:28px;">
       <h2 style="font-size:15px;font-weight:600;margin-bottom:20px;">Obrat po měsících</h2>
-      <div style="display:flex;align-items:flex-end;gap:8px;height:140px;">
+      <div style="display:flex;align-items:flex-end;gap:6px;height:150px;">
         {mesice.map(m => (
           <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
-            <div style="font-size:10px;color:#888;">{m.celkem > 0 ? fmt(m.celkem).replace(' Kč','').replace('\u00a0','') : ''}</div>
-            <div style={`width:100%;background:#bc2938;border-radius:4px 4px 0 0;opacity:${m.celkem > 0 ? '1' : '0.15'};height:${Math.round((m.celkem / maxMesic) * 100)}px;min-height:4px;`}></div>
+            {m.celkem > 0 && (
+              <div style="font-size:9px;color:#888;writing-mode:vertical-rl;transform:rotate(180deg);height:30px;overflow:hidden;">
+                {fmt(m.celkem)}
+              </div>
+            )}
+            <div style={`width:100%;border-radius:4px 4px 0 0;background:#bc2938;opacity:${m.celkem > 0 ? 1 : 0.1};height:${Math.max(Math.round((m.celkem / maxMesic) * 110), m.celkem > 0 ? 4 : 2)}px;`}></div>
             <div style="font-size:10px;color:#888;">{m.nazev.substring(0,3)}</div>
             {m.pocet > 0 && <div style="font-size:9px;color:#bbb;">{m.pocet}×</div>}
           </div>
@@ -107,10 +110,9 @@ function fmt(c: number) {
       </div>
     </div>
 
-    <!-- Top klienti -->
     {klienti.length > 0 && (
       <div class="card">
-        <h2 style="font-size:15px;font-weight:600;margin-bottom:16px;">Klienti</h2>
+        <h2 style="font-size:15px;font-weight:600;margin-bottom:16px;">Klienti {rok}</h2>
         <table style="width:100%;border-collapse:collapse;">
           <thead>
             <tr style="border-bottom:2px solid #f0ebe5;">
@@ -127,7 +129,7 @@ function fmt(c: number) {
                 <td style="padding:10px 0;text-align:right;color:#666;">{k.pocet}</td>
                 <td style="padding:10px 0;text-align:right;font-weight:500;">{fmt(k.celkem)}</td>
                 <td style="padding:10px 0;text-align:right;color:#666;">
-                  {celkemRok > 0 ? Math.round((k.celkem / celkemRok) * 100) : 0} %
+                  {celkemRok > 0 ? Math.round(k.celkem / celkemRok * 100) : 0} %
                 </td>
               </tr>
             ))}
