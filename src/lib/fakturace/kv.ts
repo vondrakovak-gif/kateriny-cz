@@ -35,6 +35,17 @@ export async function saveFaktura(faktura: Faktura): Promise<void> {
   }
 }
 
+export async function updateFaktura(faktura: Faktura): Promise<void> {
+  const redis = getRedis();
+  await redis.set(`${PREFIX}${faktura.cislo}`, faktura);
+}
+
+export async function deleteFaktura(cislo: string): Promise<void> {
+  const redis = getRedis();
+  await redis.del(`${PREFIX}${cislo}`);
+  await redis.lrem(INDEX_KEY, 0, cislo);
+}
+
 export async function updateZaplaceno(cislo: string, zaplaceno: boolean, datum?: string): Promise<void> {
   const redis = getRedis();
   const faktura = await getFaktura(cislo);

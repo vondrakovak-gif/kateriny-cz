@@ -2,7 +2,7 @@
 export const prerender = false;
 import FakturaceLayout from '../../layouts/FakturaceLayout.astro';
 import { getFaktura } from '../../lib/fakturace/kv';
-import { getDodavatel } from '../../lib/fakturace/dodavatel';
+import { getDodavatel, ibanZUctu } from '../../lib/fakturace/dodavatel';
 import type { Faktura } from '../../lib/fakturace/types';
 
 const { cislo } = Astro.params;
@@ -10,6 +10,7 @@ const faktura = cislo ? await getFaktura(decodeURIComponent(cislo)) : null;
 if (!faktura) return Astro.redirect('/fakturace');
 
 const dodavatel = getDodavatel();
+const iban = dodavatel.iban || ibanZUctu(dodavatel.bankovniUcet);
 
 function fmt(c: number) {
   return new Intl.NumberFormat('cs-CZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(c) + ' Kč';
@@ -45,8 +46,9 @@ function fmtD(d: string) {
     <!-- Náhled faktury -->
     <div id="fakturaPreview" class="card" style="padding:40px;font-size:13px;line-height:1.5;">
 
-      <!-- Horní část: číslo faktury -->
-      <div style="display:flex;justify-content:flex-end;margin-bottom:32px;">
+      <!-- Hlavička: logo vlevo, číslo faktury vpravo -->
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;">
+        <img src="/images/kateriny.logo3.png" alt="Kateřiny.cz" style="height:40px;width:auto;opacity:.85;" />
         <div style="border-bottom:2px solid #222;padding-bottom:6px;">
           <span style="font-size:20px;font-weight:400;">Faktura </span>
           <span style="font-size:20px;font-weight:700;">{faktura.cislo}</span>
@@ -137,7 +139,7 @@ function fmtD(d: string) {
 
       <!-- QR kód -->
       <div style="margin-bottom:24px;">
-        <canvas id="qrCanvas" width="100" height="100"></canvas>
+        <img id="qrImg" width="100" height="100" alt="QR Platba" style="display:block;" />
         <div style="font-size:10px;color:#888;margin-top:4px;">QR Platba</div>
       </div>
 
@@ -152,26 +154,23 @@ function fmtD(d: string) {
     </div>
   </div>
 
-  <script define:vars={{ faktura, dodavatel }}>
-    // QR Platba (SPD formát)
+  <script define:vars={{ faktura, iban }}>
     async function generateQR() {
-      const iban = dodavatel.iban || '';
-      const ucet = dodavatel.bankovniUcet || '';
-      const castka = faktura.celkemSDph.toFixed(2);
-      const vs = faktura.variabilniSymbol;
-
-      let spd = `SPD*1.0*`;
-      if (iban) spd += `ACC:${iban}*`;
-      else if (ucet) {
-        const [cisloUctu, kodBanky] = ucet.split('/');
-        spd += `ACC:CZ00${kodBanky}000000${cisloUctu.padStart(10,'0')}*`;
-      }
-      spd += `AM:${castka}*CC:CZK*MSG:Faktura ${faktura.cislo}*X-VS:${vs}`;
+      if (!iban) return;
+      const spd = [
+        'SPD*1.0',
+        `ACC:${iban}`,
+        `AM:${faktura.celkemSDph.toFixed(2)}`,
+        'CC:CZK',
+        `MSG:Faktura ${faktura.cislo}`,
+        `X-VS:${faktura.variabilniSymbol}`,
+      ].join('*');
 
       try {
         const QRCode = (await import('https://cdn.jsdelivr.net/npm/qrcode@1.5.3/+esm')).default;
-        const canvas = document.getElementById('qrCanvas');
-        await QRCode.toCanvas(canvas, spd, { width: 100, margin: 1 });
+        const dataUrl = await QRCode.toDataURL(spd, { width: 200, margin: 1, errorCorrectionLevel: 'M' });
+        const img = document.getElementById('qrImg');
+        if (img) img.src = dataUrl;
       } catch(e) {
         console.error('QR kód se nepodařilo vygenerovat:', e);
       }

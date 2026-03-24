@@ -12,17 +12,18 @@ export function getDodavatel(): Dodavatel {
   };
 }
 
+/** Vypočítá český IBAN z čísla účtu ve formátu "číslo/kód" nebo "předčíslí-číslo/kód" */
 export function ibanZUctu(ucet: string): string {
-  // Základní převod CZ IBAN z čísla účtu/kód banky
-  const [cislo, kod] = ucet.split('/');
-  if (!cislo || !kod) return '';
-  const predcisli = '000000';
-  const jistina = cislo.padStart(10, '0');
-  const bban = `${kod}${predcisli}${jistina}`;
-  const numericIBAN = bban.split('').map(c => isNaN(Number(c)) ? (c.charCodeAt(0) - 55).toString() : c).join('');
-  const mod = `${numericIBAN}123500` // CZ = 12 35
-    .split('')
-    .reduce((acc, d) => (Number(acc + d) % 97).toString(), '');
-  const check = String(98 - Number(mod)).padStart(2, '0');
+  const match = ucet.match(/^(?:(\d+)-)?(\d+)\/(\d{4})$/);
+  if (!match) return '';
+  const predcisli = (match[1] ?? '0').padStart(6, '0');
+  const cislo = match[2].padStart(10, '0');
+  const banka = match[3];
+  const bban = `${banka}${predcisli}${cislo}`;
+  // Přesunout "CZ00" na konec a převést na čísla: CZ = 1235
+  const numStr = `${bban}123500`;
+  // Mod97 po kouscích (BigInt kvůli velikosti čísla)
+  const remainder = BigInt(numStr) % 97n;
+  const check = String(98n - remainder).padStart(2, '0');
   return `CZ${check}${bban}`;
 }
