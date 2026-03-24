@@ -23,7 +23,7 @@ function fmtD(d: string) {
   <div style="max-width:820px;margin:0 auto;padding:24px 20px;">
 
     <!-- Toolbar -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+    <div class="no-print" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
       <div style="display:flex;align-items:center;gap:14px;">
         <a href="/fakturace" style="color:#888;font-size:14px;">← Zpět</a>
         <span style={`border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500;${faktura.zaplaceno ? 'background:#dcfce7;color:#16a34a;' : 'background:#fef3c7;color:#d97706;'}`}>
@@ -38,7 +38,7 @@ function fmtD(d: string) {
             {faktura.zaplaceno ? 'Označit nezaplacené' : 'Označit zaplacené'}
           </button>
         </form>
-        <button id="pdfBtn" class="btn btn-primary">Stáhnout PDF</button>
+        <button onclick="window.print()" class="btn btn-primary">Stáhnout / Tisknout PDF</button>
       </div>
     </div>
 
@@ -159,17 +159,14 @@ function fmtD(d: string) {
       const ucet = dodavatel.bankovniUcet || '';
       const castka = faktura.celkemSDph.toFixed(2);
       const vs = faktura.variabilniSymbol;
-      const zprava = `Faktura ${faktura.cislo}`;
 
-      // SPD string
       let spd = `SPD*1.0*`;
       if (iban) spd += `ACC:${iban}*`;
       else if (ucet) {
-        // převod číslo účtu/kód → pseudo IBAN pro QR (bez ověřování)
         const [cisloUctu, kodBanky] = ucet.split('/');
         spd += `ACC:CZ00${kodBanky}000000${cisloUctu.padStart(10,'0')}*`;
       }
-      spd += `AM:${castka}*CC:CZK*MSG:${zprava}*X-VS:${vs}`;
+      spd += `AM:${castka}*CC:CZK*MSG:Faktura ${faktura.cislo}*X-VS:${vs}`;
 
       try {
         const QRCode = (await import('https://cdn.jsdelivr.net/npm/qrcode@1.5.3/+esm')).default;
@@ -180,167 +177,21 @@ function fmtD(d: string) {
       }
     }
     generateQR();
-
-    // PDF generování
-    document.getElementById('pdfBtn')?.addEventListener('click', async () => {
-      const { jsPDF } = await import('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/+esm');
-      const QRCode = (await import('https://cdn.jsdelivr.net/npm/qrcode@1.5.3/+esm')).default;
-
-      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-      const W = 210, ml = 20, mr = 190;
-
-      const fmtC = v => new Intl.NumberFormat('cs-CZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v) + ' Kč';
-      const fmtD = d => d ? new Date(d).toLocaleDateString('cs-CZ') : '—';
-
-      // Číslo faktury — vpravo nahoře
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(16);
-      doc.setTextColor(30, 30, 30);
-      doc.text('Faktura ', mr, 24, { align: 'right' });
-      const fW = doc.getTextWidth('Faktura ');
-      doc.setFont('helvetica', 'bold');
-      doc.text(faktura.cislo, mr, 24, { align: 'right' });
-      doc.setDrawColor(30, 30, 30);
-      doc.setLineWidth(0.5);
-      doc.line(mr - fW - doc.getTextWidth(faktura.cislo) - 2, 26, mr, 26);
-
-      // Dodavatel / Odběratel
-      let y = 36;
-      doc.setFontSize(7.5);
-      doc.setTextColor(150, 150, 150);
-      doc.text('—', ml, y); doc.text('—', 110, y); y += 4;
-      doc.text('DODAVATEL', ml, y); doc.text('ODBĚRATEL', 110, y); y += 6;
-
-      doc.setTextColor(30, 30, 30);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
-      doc.text(dodavatel.jmeno, ml, y);
-      doc.text(faktura.klient.nazev, 110, y); y += 5;
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(60, 60, 60);
-      const dadresaRadky = dodavatel.adresa.replace(/\\n/g, '\n').split('\n');
-      dadresaRadky.forEach(r => { doc.text(r, ml, y); y += 4.5; });
-
-      let y2 = 46;
-      const kadresaRadky = faktura.klient.adresa.split(',');
-      kadresaRadky.forEach(r => { doc.text(r.trim(), 110, y2); y2 += 4.5; });
-
-      y = Math.max(y, y2) + 4;
-
-      // IČO
-      doc.setFontSize(8.5);
-      doc.setTextColor(150, 150, 150);
-      doc.text('IČO', ml, y); doc.text('IČO', 110, y);
-      doc.setTextColor(30, 30, 30);
-      doc.setFont('helvetica', 'bold');
-      doc.text(dodavatel.ico, ml + 10, y); doc.text(faktura.klient.ico || '—', 110 + 10, y); y += 5;
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
-      doc.setTextColor(120, 120, 120);
-      doc.text(dodavatel.dic ? `DIČ ${dodavatel.dic}` : 'Neplátce DPH', ml, y);
-      if (faktura.klient.dic) doc.text(`DIČ    ${faktura.klient.dic}`, 110, y);
-      y += 10;
-
-      // Oddělovač
-      doc.setDrawColor(200, 200, 200);
-      doc.setLineWidth(0.3);
-      doc.line(ml, y, mr, y); y += 7;
-
-      // Platební údaje
-      doc.setFontSize(8.5);
-      const platCol = [ml, ml + 35];
-      const datCol = [110, 110 + 35];
-      const platData = [
-        ['Bankovní účet', dodavatel.bankovniUcet],
-        ['Variabilní symbol', faktura.variabilniSymbol],
-        ['Způsob platby', 'Převodem'],
-      ];
-      const datData = [
-        ['Datum vystavení', fmtD(faktura.datum)],
-        ['Datum splatnosti', fmtD(faktura.datumSplatnosti)],
-      ];
-      const rowH = 5;
-      platData.forEach(([k, v], i) => {
-        doc.setTextColor(140, 140, 140); doc.text(k, platCol[0], y + i * rowH);
-        doc.setTextColor(30, 30, 30); doc.setFont('helvetica', 'bold');
-        doc.text(v, platCol[1], y + i * rowH);
-        doc.setFont('helvetica', 'normal');
-      });
-      datData.forEach(([k, v], i) => {
-        doc.setTextColor(140, 140, 140); doc.text(k, datCol[0], y + i * rowH);
-        doc.setTextColor(30, 30, 30); doc.setFont('helvetica', 'bold');
-        doc.text(v, mr, y + i * rowH, { align: 'right' });
-        doc.setFont('helvetica', 'normal');
-      });
-      y += 22;
-
-      // Tabulka položek — záhlaví
-      doc.setDrawColor(180, 180, 180);
-      doc.line(ml, y, mr, y); y += 5;
-      doc.setFontSize(7.5);
-      doc.setTextColor(150, 150, 150);
-      doc.text('CENA ZA MJ', 145, y, { align: 'right' });
-      doc.text('CELKEM', mr, y, { align: 'right' });
-      y += 3;
-      doc.line(ml, y, mr, y); y += 6;
-
-      // Položky
-      doc.setFontSize(9);
-      faktura.polozky.forEach(p => {
-        doc.setTextColor(140, 140, 140);
-        doc.text(`${String(p.mnozstvi).replace('.', ',')} ${p.jednotka}`, ml, y);
-        doc.setTextColor(30, 30, 30);
-        doc.text(p.popis, ml + 16, y);
-        doc.setTextColor(140, 140, 140);
-        doc.text(fmtC(p.cenaJednotka), 145, y, { align: 'right' });
-        doc.setTextColor(30, 30, 30);
-        doc.text(fmtC(p.celkem), mr, y, { align: 'right' });
-        y += 6;
-        doc.setDrawColor(235, 235, 235);
-        doc.line(ml, y - 1, mr, y - 1);
-      });
-      y += 6;
-
-      // Celkem
-      doc.setLineWidth(0.5);
-      doc.setDrawColor(30, 30, 30);
-      doc.line(130, y - 2, mr, y - 2);
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(30, 30, 30);
-      doc.text(fmtC(faktura.celkemSDph), mr, y + 6, { align: 'right' });
-      y += 18;
-
-      // QR Platba
-      const iban = dodavatel.iban || '';
-      const [cisloUctu, kodBanky] = dodavatel.bankovniUcet.split('/');
-      const ibanQR = iban || `CZ00${kodBanky}000000${cisloUctu.padStart(10,'0')}`;
-      const spd = `SPD*1.0*ACC:${ibanQR}*AM:${faktura.celkemSDph.toFixed(2)}*CC:CZK*MSG:Faktura ${faktura.cislo}*X-VS:${faktura.variabilniSymbol}`;
-
-      try {
-        const qrDataUrl = await QRCode.toDataURL(spd, { width: 300, margin: 1 });
-        doc.addImage(qrDataUrl, 'PNG', ml, y, 28, 28);
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(7.5);
-        doc.setTextColor(150, 150, 150);
-        doc.text('QR Platba', ml + 14, y + 31, { align: 'center' });
-        y += 38;
-      } catch {}
-
-      if (faktura.poznamka) {
-        doc.setFontSize(8.5);
-        doc.setTextColor(100, 100, 100);
-        doc.text(faktura.poznamka, ml, y); y += 10;
-      }
-
-      // Patička
-      doc.setFontSize(7.5);
-      doc.setTextColor(150, 150, 150);
-      doc.text(dodavatel.poznamkaFaktura || '', ml, 285);
-
-      doc.save(`faktura-${faktura.cislo}.pdf`);
-    });
   </script>
+
+  <style>
+    @media print {
+      /* Skrýt vše kromě faktury */
+      body { background: white !important; }
+      .no-print { display: none !important; }
+      #fakturaPreview {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      /* Zajistit správné barvy pro tisk */
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
 </FakturaceLayout>
