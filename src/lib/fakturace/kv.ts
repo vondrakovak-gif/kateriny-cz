@@ -2,10 +2,10 @@ import { Redis } from '@upstash/redis';
 import type { Faktura } from './types';
 
 function getRedis() {
-  const url = import.meta.env.UPSTASH_REDIS_REST_URL;
-  const token = import.meta.env.UPSTASH_REDIS_REST_TOKEN;
+  const url = import.meta.env.KV_REST_API_URL || import.meta.env.UPSTASH_REDIS_REST_URL;
+  const token = import.meta.env.KV_REST_API_TOKEN || import.meta.env.UPSTASH_REDIS_REST_TOKEN;
   if (!url || !token) {
-    throw new Error('UPSTASH_REDIS_REST_URL a UPSTASH_REDIS_REST_TOKEN nejsou nastaveny v .env');
+    throw new Error('KV_REST_API_URL a KV_REST_API_TOKEN nejsou nastaveny v .env');
   }
   return new Redis({ url, token });
 }
