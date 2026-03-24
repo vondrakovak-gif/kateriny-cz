@@ -1,0 +1,37 @@
+---
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} | Fakturace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <style is:global>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { background: #f8f5f0; color: #1a1a1a; font-family: 'Inter', sans-serif; font-size: 15px; }
+      a { color: #bc2938; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .btn { display: inline-block; padding: 8px 18px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: opacity 0.15s; }
+      .btn:hover { opacity: 0.85; }
+      .btn-primary { background: #bc2938; color: #fff; }
+      .btn-outline { background: transparent; color: #bc2938; border: 1.5px solid #bc2938; }
+      .btn-sm { padding: 5px 12px; font-size: 13px; }
+      input, select, textarea { border: 1.5px solid #ddd; border-radius: 6px; padding: 8px 12px; font-size: 14px; font-family: inherit; width: 100%; background: #fff; }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: #bc2938; }
+      label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 4px; color: #555; }
+      .card { background: #fff; border-radius: 10px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+    </style>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

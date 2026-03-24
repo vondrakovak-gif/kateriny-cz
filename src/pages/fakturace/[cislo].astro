@@ -1,0 +1,226 @@
+---
+export const prerender = false;
+import FakturaceLayout from '../../layouts/FakturaceLayout.astro';
+import { getFaktury } from '../../lib/fakturace/sheets';
+import type { Faktura } from '../../lib/fakturace/types';
+
+const { cislo } = Astro.params;
+let faktura: Faktura | undefined;
+let chyba = '';
+
+try {
+  const faktury = await getFaktury();
+  faktura = faktury.find(f => f.cislo === cislo);
+} catch (e) {
+  chyba = 'Nepodařilo se načíst fakturu z Google Sheets.';
+}
+
+if (!faktura && !chyba) {
+  return Astro.redirect('/fakturace');
+}
+
+function formatCastka(c: number) {
+  return new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'CZK', maximumFractionDigits: 0 }).format(c);
+}
+function formatDatum(d: string) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('cs-CZ');
+}
+---
+<FakturaceLayout title={`Faktura ${cislo}`}>
+  <div style="max-width:800px;margin:0 auto;padding:24px 20px;">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <a href="/fakturace" style="color:#888;font-size:14px;">← Zpět</a>
+        <h1 style="font-size:22px;font-weight:600;">Faktura {cislo}</h1>
+        {faktura && (
+          <span style={`border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500;${faktura.zaplaceno ? 'background:#dcfce7;color:#16a34a;' : 'background:#fef3c7;color:#d97706;'}`}>
+            {faktura.zaplaceno ? '✓ Zaplaceno' : '⏳ Čeká na platbu'}
+          </span>
+        )}
+      </div>
+      {faktura && (
+        <button id="pdfBtn" class="btn btn-primary">Stáhnout PDF</button>
+      )}
+    </div>
+
+    {chyba && <div style="background:#fde8ea;padding:14px;border-radius:8px;margin-bottom:16px;">{chyba}</div>}
+
+    {faktura && (
+      <div id="fakturaDetail">
+        <!-- Klient + datum -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div class="card">
+            <div style="font-size:12px;font-weight:600;color:#888;text-transform:uppercase;margin-bottom:10px;">Klient</div>
+            <div style="font-weight:600;margin-bottom:4px;">{faktura.klient.nazev}</div>
+            {faktura.klient.ico && <div style="font-size:13px;color:#666;">IČO: {faktura.klient.ico}</div>}
+            {faktura.klient.dic && <div style="font-size:13px;color:#666;">DIČ: {faktura.klient.dic}</div>}
+            <div style="font-size:13px;color:#666;margin-top:4px;">{faktura.klient.adresa}</div>
+            {faktura.klient.email && <div style="font-size:13px;color:#666;">{faktura.klient.email}</div>}
+          </div>
+          <div class="card">
+            <div style="font-size:12px;font-weight:600;color:#888;text-transform:uppercase;margin-bottom:10px;">Informace</div>
+            <table style="font-size:14px;width:100%;border-collapse:collapse;">
+              <tr><td style="color:#666;padding:3px 0;">Datum vystavení:</td><td style="font-weight:500;text-align:right;">{formatDatum(faktura.datum)}</td></tr>
+              <tr><td style="color:#666;padding:3px 0;">Datum splatnosti:</td><td style="font-weight:500;text-align:right;">{formatDatum(faktura.datumSplatnosti)}</td></tr>
+              {faktura.zaplaceno && faktura.datumZaplaceni && (
+                <tr><td style="color:#666;padding:3px 0;">Datum zaplacení:</td><td style="font-weight:500;text-align:right;">{formatDatum(faktura.datumZaplaceni)}</td></tr>
+              )}
+            </table>
+          </div>
+        </div>
+
+        <!-- Položky -->
+        <div class="card" style="margin-bottom:16px;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr style="border-bottom:2px solid #f0ebe5;">
+                <th style="text-align:left;padding:8px 0;font-size:12px;color:#888;font-weight:600;text-transform:uppercase;">Popis</th>
+                <th style="text-align:right;padding:8px 0;font-size:12px;color:#888;font-weight:600;text-transform:uppercase;">Množství</th>
+                <th style="text-align:right;padding:8px 0;font-size:12px;color:#888;font-weight:600;text-transform:uppercase;">Cena/j.</th>
+                <th style="text-align:right;padding:8px 0;font-size:12px;color:#888;font-weight:600;text-transform:uppercase;">Celkem</th>
+              </tr>
+            </thead>
+            <tbody>
+              {faktura.polozky.map(p => (
+                <tr style="border-bottom:1px solid #f0ebe5;">
+                  <td style="padding:10px 0;">{p.popis}</td>
+                  <td style="padding:10px 0;text-align:right;color:#666;">{p.mnozstvi} {p.jednotka}</td>
+                  <td style="padding:10px 0;text-align:right;color:#666;">{formatCastka(p.cenaJednotka)}</td>
+                  <td style="padding:10px 0;text-align:right;font-weight:500;">{formatCastka(p.celkem)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div style="border-top:2px solid #f0ebe5;margin-top:12px;padding-top:12px;">
+            <div style="display:flex;justify-content:flex-end;gap:40px;">
+              <div>
+                {faktura.dph > 0 && (
+                  <>
+                    <div style="display:flex;justify-content:space-between;gap:40px;font-size:14px;color:#666;margin-bottom:6px;">
+                      <span>Základ DPH:</span><span>{formatCastka(faktura.celkemBezDph)}</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;gap:40px;font-size:14px;color:#666;margin-bottom:6px;">
+                      <span>DPH {faktura.dph}%:</span><span>{formatCastka(faktura.celkemSDph - faktura.celkemBezDph)}</span>
+                    </div>
+                  </>
+                )}
+                <div style="display:flex;justify-content:space-between;gap:40px;font-size:18px;font-weight:700;color:#bc2938;">
+                  <span>Celkem:</span><span>{formatCastka(faktura.celkemSDph)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {faktura.poznamka && (
+          <div class="card" style="margin-bottom:16px;">
+            <div style="font-size:12px;font-weight:600;color:#888;text-transform:uppercase;margin-bottom:8px;">Poznámka</div>
+            <p style="font-size:14px;color:#555;">{faktura.poznamka}</p>
+          </div>
+        )}
+
+        <!-- Akce -->
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+          <form method="POST" action="/api/fakturace/zaplaceno">
+            <input type="hidden" name="cislo" value={faktura.cislo} />
+            <input type="hidden" name="zaplaceno" value={faktura.zaplaceno ? 'false' : 'true'} />
+            <button type="submit" class="btn btn-outline">
+              {faktura.zaplaceno ? 'Označit jako nezaplacené' : 'Označit jako zaplacené'}
+            </button>
+          </form>
+        </div>
+      </div>
+    )}
+  </div>
+
+  {faktura && (
+    <script define:vars={{ faktura }}>
+      document.getElementById('pdfBtn')?.addEventListener('click', async () => {
+        const { jsPDF } = await import('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/+esm');
+        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+        const fmt = v => new Intl.NumberFormat('cs-CZ', { maximumFractionDigits: 0 }).format(v) + ' Kč';
+        const fmtD = d => d ? new Date(d).toLocaleDateString('cs-CZ') : '—';
+
+        // Hlavička
+        doc.setFontSize(22);
+        doc.setTextColor(188, 41, 56);
+        doc.text('FAKTURA', 20, 25);
+        doc.setFontSize(13);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`č. ${faktura.cislo}`, 20, 33);
+
+        // Klient
+        doc.setFontSize(10);
+        doc.setTextColor(150, 150, 150);
+        doc.text('ODBĚRATEL', 20, 50);
+        doc.setTextColor(30, 30, 30);
+        doc.setFontSize(11);
+        doc.text(faktura.klient.nazev, 20, 57);
+        doc.setFontSize(9);
+        doc.setTextColor(80, 80, 80);
+        let y = 63;
+        if (faktura.klient.ico) { doc.text(`IČO: ${faktura.klient.ico}`, 20, y); y += 5; }
+        if (faktura.klient.dic) { doc.text(`DIČ: ${faktura.klient.dic}`, 20, y); y += 5; }
+        doc.text(faktura.klient.adresa, 20, y); y += 5;
+
+        // Datum info
+        doc.setFontSize(10);
+        doc.setTextColor(150, 150, 150);
+        doc.text('Datum vystavení:', 130, 50);
+        doc.text('Datum splatnosti:', 130, 57);
+        doc.setTextColor(30, 30, 30);
+        doc.setFontSize(10);
+        doc.text(fmtD(faktura.datum), 175, 50, { align: 'right' });
+        doc.text(fmtD(faktura.datumSplatnosti), 175, 57, { align: 'right' });
+
+        // Tabulka položek
+        y = Math.max(y + 10, 90);
+        doc.setFillColor(248, 245, 240);
+        doc.rect(20, y - 5, 170, 8, 'F');
+        doc.setFontSize(9);
+        doc.setTextColor(120, 120, 120);
+        doc.text('Popis', 22, y);
+        doc.text('Množství', 110, y, { align: 'right' });
+        doc.text('Cena/j.', 145, y, { align: 'right' });
+        doc.text('Celkem', 188, y, { align: 'right' });
+        y += 7;
+
+        doc.setTextColor(30, 30, 30);
+        faktura.polozky.forEach(p => {
+          doc.setFontSize(10);
+          doc.text(p.popis, 22, y);
+          doc.setFontSize(9);
+          doc.setTextColor(100, 100, 100);
+          doc.text(`${p.mnozstvi} ${p.jednotka}`, 110, y, { align: 'right' });
+          doc.text(fmt(p.cenaJednotka), 145, y, { align: 'right' });
+          doc.setTextColor(30, 30, 30);
+          doc.text(fmt(p.celkem), 188, y, { align: 'right' });
+          y += 7;
+          doc.setDrawColor(240, 235, 229);
+          doc.line(20, y - 2, 190, y - 2);
+        });
+
+        // Celkem
+        y += 5;
+        doc.setFontSize(13);
+        doc.setTextColor(188, 41, 56);
+        doc.setFont(undefined, 'bold');
+        doc.text('Celkem:', 140, y);
+        doc.text(fmt(faktura.celkemSDph), 188, y, { align: 'right' });
+
+        if (faktura.poznamka) {
+          y += 15;
+          doc.setFont(undefined, 'normal');
+          doc.setFontSize(9);
+          doc.setTextColor(100, 100, 100);
+          doc.text('Poznámka: ' + faktura.poznamka, 20, y);
+        }
+
+        doc.save(`faktura-${faktura.cislo}.pdf`);
+      });
+    </script>
+  )}
+</FakturaceLayout>
