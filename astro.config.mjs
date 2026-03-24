@@ -1,10 +1,9 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
-import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel/serverless';
 
 export default defineConfig({
-  integrations: [tailwind(), sitemap()],
+  integrations: [tailwind()],
   site: 'https://www.kateriny.cz',
   output: 'hybrid',
   adapter: vercel(),
