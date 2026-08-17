@@ -19,8 +19,8 @@ function findFiles(dir, pattern) {
 const files = findFiles('.vercel/output', '.vc-config.json');
 for (const file of files) {
   const content = readFileSync(file, 'utf-8');
-  if (content.includes('nodejs18.x')) {
-    writeFileSync(file, content.replace(/nodejs18\.x/g, 'nodejs20.x'));
+  if (content.includes('nodejs18.x') || content.includes('nodejs20.x')) {
+    writeFileSync(file, content.replace(/nodejs(18|20)\.x/g, 'nodejs24.x'));
     console.log(`Patched runtime: ${file}`);
   }
 }
