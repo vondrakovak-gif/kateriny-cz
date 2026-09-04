@@ -1,0 +1,162 @@
+---
+export const prerender = false;
+import FakturaceLayout from '../../layouts/FakturaceLayout.astro';
+import { getFaktury } from '../../lib/fakturace/kv';
+import type { Faktura } from '../../lib/fakturace/types';
+
+let faktury: Faktura[] = [];
+let chyba = '';
+
+try {
+  faktury = await getFaktury();
+} catch (e: unknown) {
+  const msg = e instanceof Error ? e.message : String(e);
+  chyba = `Redis chyba: ${msg}`;
+}
+
+faktury.sort((a, b) => b.cislo.localeCompare(a.cislo));
+
+const rok = new Date().getFullYear();
+const letosniFaktury = faktury.filter(f => f.datum.startsWith(String(rok)));
+const celkemLetos = letosniFaktury.reduce((s, f) => s + f.celkemSDph, 0);
+const nezaplaceno = faktury.filter(f => !f.zaplaceno).reduce((s, f) => s + f.celkemSDph, 0);
+
+function fmt(c: number) {
+  return new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'CZK', maximumFractionDigits: 0 }).format(c);
+}
+function fmtD(d: string) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('cs-CZ');
+}
+---
+<FakturaceLayout title="Přehled faktur">
+  <div style="max-width:1100px;margin:0 auto;padding:24px 20px;">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
+      <h1 style="font-size:24px;font-weight:600;">Fakturace</h1>
+      <div style="display:flex;gap:10px;">
+        <a href="/fakturace/nova" class="btn btn-primary">+ Nová faktura</a>
+        <a href="/fakturace/statistiky" class="btn btn-outline">Statistiky</a>
+        <a href="/api/fakturace/logout" style="color:#aaa;font-size:13px;align-self:center;margin-left:4px;">Odhlásit</a>
+      </div>
+    </div>
+
+    {chyba && (
+      <div style="background:#fff8e1;border:1.5px solid #f0b429;border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:14px;color:#7a5100;">
+        ⚠️ {chyba}
+      </div>
+    )}
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;">
+      <div class="card">
+        <div style="font-size:13px;color:#888;margin-bottom:4px;">Celkem {rok}</div>
+        <div style="font-size:22px;font-weight:600;color:#bc2938;">{fmt(celkemLetos)}</div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;color:#888;margin-bottom:4px;">Nezaplaceno</div>
+        <div style="font-size:22px;font-weight:600;color:{nezaplaceno > 0 ? '#d97706' : '#16a34a'};">{fmt(nezaplaceno)}</div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;color:#888;margin-bottom:4px;">Počet faktur {rok}</div>
+        <div style="font-size:22px;font-weight:600;">{letosniFaktury.length}</div>
+      </div>
+    </div>
+
+    <!-- Akce pro výběr -->
+    <div id="bulkBar" style="display:none;background:#fff;border:1.5px solid #bc2938;border-radius:8px;padding:10px 16px;margin-bottom:12px;align-items:center;gap:12px;">
+      <span id="bulkCount" style="font-size:14px;font-weight:500;color:#bc2938;"></span>
+      <button id="bulkTisk" class="btn btn-primary btn-sm">Tisknout vybrané</button>
+      <button id="bulkZrusit" class="btn btn-outline btn-sm">Zrušit výběr</button>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+      {faktury.length === 0 && !chyba ? (
+        <div style="padding:40px;text-align:center;color:#888;">
+          Zatím žádné faktury. <a href="/fakturace/nova">Vytvoř první →</a>
+        </div>
+      ) : (
+        <table style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr style="border-bottom:2px solid #f0ebe5;background:#faf8f5;">
+              <th style="padding:12px 12px 12px 16px;width:36px;">
+                <input type="checkbox" id="selectAll" title="Vybrat vše" />
+              </th>
+              <th style="padding:12px 8px;text-align:left;font-size:12px;font-weight:600;color:#888;text-transform:uppercase;">Číslo</th>
+              <th style="padding:12px 8px;text-align:left;font-size:12px;font-weight:600;color:#888;text-transform:uppercase;">Klient</th>
+              <th style="padding:12px 8px;text-align:left;font-size:12px;font-weight:600;color:#888;text-transform:uppercase;">Vystaveno</th>
+              <th style="padding:12px 8px;text-align:left;font-size:12px;font-weight:600;color:#888;text-transform:uppercase;">Splatnost</th>
+              <th style="padding:12px 8px;text-align:right;font-size:12px;font-weight:600;color:#888;text-transform:uppercase;">Částka</th>
+              <th style="padding:12px 8px;text-align:center;font-size:12px;font-weight:600;color:#888;text-transform:uppercase;">Stav</th>
+              <th style="padding:12px 16px 12px 8px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {faktury.map((f, i) => (
+              <tr class="faktura-row" style={`border-bottom:1px solid #f0ebe5;${i % 2 !== 0 ? 'background:#fdfcfb;' : ''}`}>
+                <td style="padding:10px 12px 10px 16px;">
+                  <input type="checkbox" class="faktura-check" data-cislo={f.cislo} />
+                </td>
+                <td style="padding:10px 8px;font-weight:500;">{f.cislo}</td>
+                <td style="padding:10px 8px;">{f.klient.nazev}</td>
+                <td style="padding:10px 8px;color:#666;">{fmtD(f.datum)}</td>
+                <td style="padding:10px 8px;color:#666;">{fmtD(f.datumSplatnosti)}</td>
+                <td style="padding:10px 8px;text-align:right;font-weight:500;">{fmt(f.celkemSDph)}</td>
+                <td style="padding:10px 8px;text-align:center;">
+                  <form method="POST" action="/api/fakturace/zaplaceno" style="display:inline;">
+                    <input type="hidden" name="cislo" value={f.cislo} />
+                    <input type="hidden" name="zaplaceno" value={f.zaplaceno ? 'false' : 'true'} />
+                    <button type="submit" style={`border:none;border-radius:20px;padding:4px 12px;font-size:12px;cursor:pointer;font-family:inherit;${f.zaplaceno ? 'background:#dcfce7;color:#16a34a;' : 'background:#fef3c7;color:#d97706;'}`}>
+                      {f.zaplaceno ? '✓ Zaplaceno' : '⏳ Čeká'}
+                    </button>
+                  </form>
+                </td>
+                <td style="padding:10px 16px 10px 8px;">
+                  <div style="display:flex;gap:6px;">
+                    <a href={`/fakturace/${f.cislo}`} class="btn btn-outline btn-sm">Detail</a>
+                    <a href={`/fakturace/${f.cislo}/upravit`} class="btn btn-sm" style="background:#f0ebe5;color:#555;">Upravit</a>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  </div>
+
+  <script>
+    const checkboxes = () => document.querySelectorAll<HTMLInputElement>('.faktura-check');
+    const bulkBar = document.getElementById('bulkBar')!;
+    const bulkCount = document.getElementById('bulkCount')!;
+
+    function updateBulkBar() {
+      const vybrane = [...checkboxes()].filter(c => c.checked);
+      if (vybrane.length > 0) {
+        bulkBar.style.display = 'flex';
+        bulkCount.textContent = `Vybráno: ${vybrane.length}`;
+      } else {
+        bulkBar.style.display = 'none';
+      }
+    }
+
+    document.getElementById('selectAll')?.addEventListener('change', function(this: HTMLInputElement) {
+      checkboxes().forEach(c => c.checked = this.checked);
+      updateBulkBar();
+    });
+
+    document.querySelectorAll('.faktura-check').forEach(c =>
+      c.addEventListener('change', updateBulkBar)
+    );
+
+    document.getElementById('bulkTisk')?.addEventListener('click', () => {
+      const cisla = [...checkboxes()].filter(c => c.checked).map(c => c.dataset.cislo).join(',');
+      window.open(`/fakturace/tisk?cisla=${encodeURIComponent(cisla)}`, '_blank');
+    });
+
+    document.getElementById('bulkZrusit')?.addEventListener('click', () => {
+      checkboxes().forEach(c => c.checked = false);
+      (document.getElementById('selectAll') as HTMLInputElement).checked = false;
+      updateBulkBar();
+    });
+  </script>
+</FakturaceLayout>

@@ -1,0 +1,31 @@
+---
+export const prerender = false;
+import FakturaceLayout from '../../layouts/FakturaceLayout.astro';
+
+const error = Astro.url.searchParams.get('error');
+---
+<FakturaceLayout title="Přihlášení">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;">
+    <div class="card" style="width:100%;max-width:380px;">
+      <h1 style="font-size:22px;font-weight:600;margin-bottom:24px;color:#bc2938;">Fakturace</h1>
+
+      {error && (
+        <div style="background:#fde8ea;color:#bc2938;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:14px;">
+          Špatné jméno nebo heslo.
+        </div>
+      )}
+
+      <form method="POST" action="/api/fakturace/login">
+        <div style="margin-bottom:14px;">
+          <label for="username">Uživatelské jméno</label>
+          <input type="text" id="username" name="username" required autocomplete="username" />
+        </div>
+        <div style="margin-bottom:20px;">
+          <label for="password">Heslo</label>
+          <input type="password" id="password" name="password" required autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Přihlásit se</button>
+      </form>
+    </div>
+  </div>
+</FakturaceLayout>

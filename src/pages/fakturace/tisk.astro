@@ -1,0 +1,149 @@
+---
+export const prerender = false;
+import FakturaceLayout from '../../layouts/FakturaceLayout.astro';
+import { getFaktura } from '../../lib/fakturace/kv';
+import { getDodavatel, ibanZUctu } from '../../lib/fakturace/dodavatel';
+
+const cisla = Astro.url.searchParams.get('cisla')?.split(',').filter(Boolean) ?? [];
+if (cisla.length === 0) return Astro.redirect('/fakturace');
+
+const dodavatel = getDodavatel();
+const iban = dodavatel.iban || ibanZUctu(dodavatel.bankovniUcet);
+const faktury = (await Promise.all(cisla.map(c => getFaktura(c)))).filter(Boolean);
+
+function fmt(c: number) {
+  return new Intl.NumberFormat('cs-CZ', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(c) + ' Kč';
+}
+function fmtD(d: string) {
+  return d ? new Date(d).toLocaleDateString('cs-CZ') : '—';
+}
+---
+<FakturaceLayout title="Tisk faktur">
+  <style>
+    @media screen {
+      .toolbar { padding: 16px 20px; background: #fff; border-bottom: 1px solid #eee; display: flex; gap: 12px; align-items: center; }
+      .faktura-stranka { max-width: 800px; margin: 32px auto; padding: 40px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+    }
+    @media print {
+      .toolbar { display: none !important; }
+      .faktura-stranka { margin: 0; padding: 20mm 15mm; box-shadow: none; page-break-after: always; }
+      .faktura-stranka:last-child { page-break-after: avoid; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+    body { background: #f8f5f0; font-family: 'Inter', sans-serif; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; }
+  </style>
+
+  <div class="toolbar">
+    <a href="/fakturace" style="color:#888;font-size:14px;">← Zpět</a>
+    <span style="color:#666;font-size:14px;">{faktury.length} {faktury.length === 1 ? 'faktura' : faktury.length < 5 ? 'faktury' : 'faktur'}</span>
+    <button onclick="window.print()" class="btn btn-primary" style="margin-left:auto;">Tisknout / Uložit PDF</button>
+  </div>
+
+  {faktury.map(faktura => (
+    <div class="faktura-stranka">
+
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;">
+        <img src="/images/kateriny.logo3.png" alt="Kateřiny.cz" style="height:40px;width:auto;opacity:.85;" />
+        <div style="border-bottom:2px solid #222;padding-bottom:6px;">
+          <span style="font-size:20px;font-weight:400;">Faktura </span>
+          <span style="font-size:20px;font-weight:700;">{faktura.cislo}</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:24px;">
+        <div>
+          <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">—<br/>DODAVATEL</div>
+          <div style="font-weight:700;margin-bottom:2px;">{dodavatel.jmeno}</div>
+          {dodavatel.adresa.split('\\n').map(r => <div>{r}</div>)}
+        </div>
+        <div>
+          <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">—<br/>ODBĚRATEL</div>
+          <div style="font-weight:700;margin-bottom:2px;">{faktura.klient.nazev}</div>
+          {faktura.klient.adresa.split(',').map(r => <div>{r.trim()}</div>)}
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:20px;">
+        <div>
+          <span style="color:#888;margin-right:8px;">IČO</span><span style="font-weight:600;">{dodavatel.ico}</span>
+          <div style="font-size:12px;color:#888;margin-top:3px;">{dodavatel.dic ? `DIČ ${dodavatel.dic}` : 'Neplátce DPH'}</div>
+        </div>
+        <div>
+          <span style="color:#888;margin-right:8px;">IČO</span><span style="font-weight:600;">{faktura.klient.ico || '—'}</span>
+          {faktura.klient.dic && <div><span style="color:#888;margin-right:8px;">DIČ</span><span style="font-weight:600;">{faktura.klient.dic}</span></div>}
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:16px 0;border-top:1px solid #e5e5e5;margin-bottom:24px;">
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 16px;">
+          <span style="color:#888;">Bankovní účet</span><span style="font-weight:600;text-align:right;">{dodavatel.bankovniUcet}</span>
+          <span style="color:#888;">Variabilní symbol</span><span style="font-weight:600;text-align:right;">{faktura.variabilniSymbol}</span>
+          <span style="color:#888;">Způsob platby</span><span style="font-weight:600;text-align:right;">Převodem</span>
+        </div>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 16px;">
+          <span style="color:#888;">Datum vystavení</span><span style="font-weight:600;text-align:right;">{fmtD(faktura.datum)}</span>
+          <span style="color:#888;">Datum splatnosti</span><span style="font-weight:600;text-align:right;">{fmtD(faktura.datumSplatnosti)}</span>
+        </div>
+      </div>
+
+      <table style="margin-bottom:16px;">
+        <thead>
+          <tr style="border-top:1px solid #ddd;border-bottom:1px solid #ddd;">
+            <th style="padding:8px 0;text-align:left;font-size:11px;color:#888;font-weight:600;text-transform:uppercase;width:55%"></th>
+            <th style="padding:8px 0;text-align:right;font-size:11px;color:#888;font-weight:600;text-transform:uppercase;">CENA ZA MJ</th>
+            <th style="padding:8px 0;text-align:right;font-size:11px;color:#888;font-weight:600;text-transform:uppercase;padding-left:24px;">CELKEM</th>
+          </tr>
+        </thead>
+        <tbody>
+          {faktura.polozky.map(p => (
+            <tr style="border-bottom:1px solid #eee;">
+              <td style="padding:10px 0;">
+                <span style="color:#888;margin-right:8px;">{p.mnozstvi.toString().replace('.', ',')} {p.jednotka}</span>
+                {p.popis}
+              </td>
+              <td style="padding:10px 0;text-align:right;color:#888;">{fmt(p.cenaJednotka)}</td>
+              <td style="padding:10px 0;text-align:right;padding-left:24px;font-weight:500;">{fmt(p.celkem)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;">
+        <div>
+          <img class="qr-img" data-faktura={faktura.cislo} data-castka={faktura.celkemSDph} data-vs={faktura.variabilniSymbol} width="90" height="90" alt="QR Platba" />
+          <div style="font-size:10px;color:#888;margin-top:4px;text-align:center;">QR Platba</div>
+        </div>
+        <div style="border-top:2px solid #222;padding-top:10px;text-align:right;">
+          {faktura.dph > 0 && (
+            <>
+              <div style="font-size:12px;color:#888;margin-bottom:2px;">Základ DPH: {fmt(faktura.celkemBezDph)}</div>
+              <div style="font-size:12px;color:#888;margin-bottom:6px;">DPH {faktura.dph}%: {fmt(faktura.celkemSDph - faktura.celkemBezDph)}</div>
+            </>
+          )}
+          <div style="font-size:22px;font-weight:700;">{fmt(faktura.celkemSDph)}</div>
+        </div>
+      </div>
+
+      {faktura.poznamka && <div style="font-size:12px;color:#555;margin-bottom:16px;">{faktura.poznamka}</div>}
+      <div style="border-top:1px solid #e5e5e5;padding-top:12px;font-size:11px;color:#888;">{dodavatel.poznamkaFaktura}</div>
+    </div>
+  ))}
+
+  <script define:vars={{ iban }}>
+    async function generateQRCodes() {
+      if (!iban) return;
+      const QRCode = (await import('https://cdn.jsdelivr.net/npm/qrcode@1.5.3/+esm')).default;
+      for (const img of document.querySelectorAll('.qr-img')) {
+        const castka = img.dataset.castka;
+        const vs = img.dataset.vs;
+        const cislo = img.dataset.faktura;
+        const spd = ['SPD*1.0', `ACC:${iban}`, `AM:${parseFloat(castka).toFixed(2)}`, 'CC:CZK', `MSG:Faktura ${cislo}`, `X-VS:${vs}`].join('*');
+        try {
+          img.src = await QRCode.toDataURL(spd, { width: 200, margin: 1, errorCorrectionLevel: 'M' });
+        } catch {}
+      }
+    }
+    generateQRCodes();
+  </script>
+</FakturaceLayout>
