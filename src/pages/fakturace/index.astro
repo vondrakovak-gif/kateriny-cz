@@ -9,8 +9,9 @@ let chyba = '';
 
 try {
   faktury = await getFaktury();
-} catch (e) {
-  chyba = 'Vercel KV není propojeno. Nastav KV_* proměnné ve Vercel dashboardu.';
+} catch (e: unknown) {
+  const msg = e instanceof Error ? e.message : String(e);
+  chyba = `Redis chyba: ${msg}`;
 }
 
 faktury.sort((a, b) => b.cislo.localeCompare(a.cislo));
