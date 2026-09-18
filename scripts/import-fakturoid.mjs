@@ -16,8 +16,8 @@ const REDIRECT_PORT = 3456;
 const REDIRECT_URI = `http://localhost:${REDIRECT_PORT}/callback`;
 const FAKTUROID_API = `https://app.fakturoid.cz/api/v2/accounts/${SLUG}`;
 
-const UPSTASH_URL = process.env.UPSTASH_URL;
-const UPSTASH_TOKEN = process.env.UPSTASH_TOKEN;
+const UPSTASH_URL = process.env.UPSTASH_URL || 'https://lucky-hare-82542.upstash.io';
+const UPSTASH_TOKEN = process.env.UPSTASH_TOKEN || 'gQAAAAAAAUJuAAIgcDI4MjYyNDA2OTcxMmI0MDgyODlkZTMzOTQwNDVlMmU5Yw';
 
 // ── 1. OAuth2: získání access tokenu ──────────────────────────────────────────
 
