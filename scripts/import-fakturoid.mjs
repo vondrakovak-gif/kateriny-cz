@@ -43,7 +43,7 @@ async function getAccessToken() {
 
 function getAuthCode() {
   return new Promise((resolve, reject) => {
-    const url = `https://app.fakturoid.cz/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code`;
+    const url = `https://app.fakturoid.cz/api/v2/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code`;
     console.log('\n📋 Otevři tuto URL v prohlížeči a přihlas se:\n');
     console.log('  ' + url + '\n');
 
