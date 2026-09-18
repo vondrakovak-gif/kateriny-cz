@@ -39,6 +39,7 @@ function fmtD(d: string) {
             {faktura.zaplaceno ? 'Označit nezaplacené' : 'Označit zaplacené'}
           </button>
         </form>
+        <a href={`/fakturace/nova?duplicate=${encodeURIComponent(faktura.cislo)}`} class="btn btn-outline btn-sm">Duplikovat</a>
         <button onclick="window.print()" class="btn btn-primary">Stáhnout / Tisknout PDF</button>
       </div>
     </div>

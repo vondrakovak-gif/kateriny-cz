@@ -114,6 +114,7 @@ function fmtD(d: string) {
                   <div style="display:flex;gap:6px;">
                     <a href={`/fakturace/${f.cislo}`} class="btn btn-outline btn-sm">Detail</a>
                     <a href={`/fakturace/${f.cislo}/upravit`} class="btn btn-sm" style="background:#f0ebe5;color:#555;">Upravit</a>
+                    <a href={`/fakturace/nova?duplicate=${encodeURIComponent(f.cislo)}`} class="btn btn-sm" style="background:#e0f2fe;color:#0369a1;" title="Vytvořit novou fakturu jako kopii">Duplikovat</a>
                   </div>
                 </td>
               </tr>
